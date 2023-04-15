@@ -7,28 +7,18 @@ import ButtonTask from "./ButtonTask";
 type LeadAreaType = {
   isTodo?: boolean;
   isMemo?: boolean;
-  userInfo?:
-    | {
-        username: string;
-      }
-    | undefined;
+  currentUser: any;
 };
 
-const LeadArea = ({ isTodo, isMemo, userInfo }: LeadAreaType) => {
+const LeadArea = ({ isTodo, isMemo, currentUser }: LeadAreaType) => {
   return (
     <div>
-      <p className="text-2xl text-center">{`${"日時が入ります"}`}</p>
-      <p className="text-xl text-center mt-6">
-        {/* {`${
-          userInfo && userInfo.username
-        } さん 今日も１日頑張っていきましょう🔥`} */}
-      </p>
+      <p className="text-2xl text-center">{`${
+        currentUser && currentUser.email
+      }でログインしています`}</p>
+      <p className="text-xl text-center mt-6"></p>
       <div className="mt-8 flex items-center justify-center">
-        <ButtonTask
-          taskName="TODO"
-          isTodoIcon
-          isActive={isTodo}
-        />
+        <ButtonTask taskName="TODO" isTodoIcon isActive={isTodo} />
         <ButtonTask taskName="メモ" isActive={isMemo} />
       </div>
     </div>

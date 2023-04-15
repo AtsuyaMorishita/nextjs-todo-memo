@@ -16,9 +16,16 @@ export default function Signup() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("会員登録ができました！");
-      router.push("/");
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user);
+          alert("会員登録ができました！");
+          router.push("/");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } catch (error) {
       alert("会員登録に失敗しました。。");
     }

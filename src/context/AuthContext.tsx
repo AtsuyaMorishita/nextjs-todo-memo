@@ -23,22 +23,23 @@ export const AuthProvider = ({ children }: AuthType) => {
   const [currentUser, setCurrentUser] = useState<User | null | undefined>(
     undefined
   );
-
-  // const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      console.log("ログイン状態が変化した！");
+    return auth.onAuthStateChanged((user) => {
+      console.log("ログイン状態が変化した！", user);
       setCurrentUser(user);
-      // if (!user && router.pathname === "/") {
-      //   alert("ログインしてください");
-      //   router.push("/login");
-      // }
+      setLoading(false);
     });
   }, []);
+
+  const value = {
+    currentUser,
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser: currentUser }}>
-      {children}
+    <AuthContext.Provider value={value}>
+      {loading ? <p>loading...</p> : children}
     </AuthContext.Provider>
   );
 };

@@ -1,8 +1,9 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { auth } from "../../lib/firebase";
+import { auth, db } from "../../lib/firebase";
 
 export default function Login() {
   const router = useRouter();
@@ -16,13 +17,21 @@ export default function Login() {
     e.preventDefault();
     try {
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+
+          const docRef = doc(db, "user", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (!docSnap.exists()) {
+            await setDoc(doc(db, "user", user.uid), {});
+          }
+
           alert("ログインできました！");
           router.push("/");
         })
         .catch((error) => {
-          alert("ログインに失敗しました");
           console.log(error);
+          alert("ログインに失敗しました");
         });
     } catch {
       alert("何かしらのログインエラーが起きました");

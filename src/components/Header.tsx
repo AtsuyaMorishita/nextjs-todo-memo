@@ -8,11 +8,11 @@ import { useAuthContext } from "@/context/AuthContext";
 
 type HeaderType = {
   pageTitle?: string;
+  currentUser: any;
 };
 
-const Header = ({ pageTitle }: HeaderType) => {
+const Header = ({ pageTitle, currentUser }: HeaderType) => {
   const router = useRouter();
-  const isLogin = useAuthContext();
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -29,7 +29,7 @@ const Header = ({ pageTitle }: HeaderType) => {
       <header className="border-b-2">
         <div className="flex justify-between px-8 max-w-7xl h-16">
           <h1 className="flex justify-center flex-col text-xl">TODO&メモ</h1>
-          {!isLogin && (
+          {currentUser && (
             <button className="text-sm" onClick={handleLogout}>
               ログアウト
             </button>
