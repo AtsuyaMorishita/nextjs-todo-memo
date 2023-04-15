@@ -1,22 +1,21 @@
-import { useAuthContext } from "@/context/AuthContext";
-import { getAuth, signOut } from "firebase/auth";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { app } from "../../lib/firebase";
+import Header from "@/components/Header";
+import Layout from "@/components/Layout";
+import LeadArea from "@/components/LeadArea";
+import MainAreaWrap from "@/components/MainAreaWrap";
+import TodoArea from "@/components/TodoArea";
 
 export default function Home() {
-  const router = useRouter();
-  const auth = getAuth(app);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    alert("ログアウトしました");
-    await router.push("/login");
-  };
-
   return (
     <div>
-      <button onClick={handleLogout}>ログアウト</button>
+      <Header />
+
+      <Layout>
+        <LeadArea />
+      </Layout>
+
+      <MainAreaWrap>
+        <TodoArea />
+      </MainAreaWrap>
     </div>
   );
 }

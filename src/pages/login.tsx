@@ -1,10 +1,10 @@
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { auth } from "../../lib/firebase";
 
 export default function Login() {
-  const auth = getAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,11 +15,17 @@ export default function Login() {
   const onLogin = async (e: any) => {
     e.preventDefault();
     try {
-      signInWithEmailAndPassword(auth, email, password);
-      alert("ログインできました！");
-      await router.push("/");
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          alert("ログインできました！");
+          router.push("/");
+        })
+        .catch((error) => {
+          alert("ログインに失敗しました");
+          console.log(error);
+        });
     } catch {
-      alert("ログインに失敗しました");
+      alert("何かしらのログインエラーが起きました");
     }
   };
 

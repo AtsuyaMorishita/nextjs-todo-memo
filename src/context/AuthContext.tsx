@@ -24,16 +24,16 @@ export const AuthProvider = ({ children }: AuthType) => {
     undefined
   );
 
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       console.log("ログイン状態が変化した！");
       setCurrentUser(user);
-      if (!user) {
-        alert("ログインしてください");
-        router.push("/login");
-      }
+      // if (!user && router.pathname === "/") {
+      //   alert("ログインしてください");
+      //   router.push("/login");
+      // }
     });
   }, []);
   return (
