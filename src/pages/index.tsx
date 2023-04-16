@@ -17,7 +17,7 @@ export default function Home() {
       </Layout>
 
       <MainAreaWrap>
-        <TodoArea />
+        <TodoArea currentUser={currentUser} />
       </MainAreaWrap>
     </div>
   );

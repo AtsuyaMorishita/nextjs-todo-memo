@@ -1,45 +1,53 @@
-// import axios from "axios";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 type TodoAreaType = {
-  userInfo?:
-    | {
-        _id: string;
-        username: string;
-        password: string;
-        "remaining-tasks": [];
-        "completed-tasks": [];
-        "memo-title": string;
-        "memo-content": string;
-      }
-    | undefined;
+  currentUser: any;
 };
 
-const TodoArea = ({ userInfo }: TodoAreaType) => {
+const TodoArea = ({ currentUser }: TodoAreaType) => {
   // if (!userInfo) throw new Error("ユーザー情報が取得できませんでした");
 
-  const [checked, isChecked] = useState(false); //チェックボックスの状態を管理
+  const [checked, isChecked] = useState(false); //チェッsクボックスの状態を管理
   const [inputText, setInputText] = useState(""); //タスクをテキストを管理
-  // const [userTasks, setUserTasks] = useState(userInfo["remaining-tasks"]); //残タスクを管理
+  const [remainingTasks, setRemainingTasks] = useState([]); //残タスクを管理
   // const [finishTasks, setFinishTasks] = useState(userInfo["completed-tasks"]); //完了タスクを管理
 
   //チェック時のスタイル
   const activeStyle = `after:absolute after:w-full after:h-[1px] after:left-0 after:top-[50%] after:bg-main`;
   const checkedStyle = checked ? activeStyle : "";
 
+  useEffect(() => {
+    /**
+     * 全てのタスクを取得する
+     */
+    const getTask = async () => {
+      const resData = await axios.post("/api/getTask", {
+        currentUserId: currentUser.uid,
+      });
+      setRemainingTasks(resData.data);
+    };
+    getTask();
+  }, []);
+
+  /**
+   * タスクを追加する
+   */
   const addTask = async () => {
+    //追加するデータ
+    const todoData = {
+      date: "4月1日",
+      isComplate: false,
+      todo: inputText,
+    };
+
     try {
-      //タスクをDBに追加する
-      // await axios.post("/api/addTask", {
-      //   username: userInfo.username,
-      //   inputText: inputText,
-      // });
-      //残タスクをフロントに表示させる
-      // const newUserInfo = await axios.get(
-      //   `/api/getUser?userId=${userInfo._id}`
-      // );
-      // setUserTasks(newUserInfo.data[0]["remaining-tasks"]);
-      // setInputText("");
+      const resData = await axios.post("/api/addTask", {
+        currentUserId: currentUser.uid,
+        todoData,
+      });
+      setRemainingTasks(resData.data);
+      setInputText("");
     } catch (err) {
       console.log(err);
     }
@@ -123,6 +131,8 @@ const TodoArea = ({ userInfo }: TodoAreaType) => {
     }
   };
 
+  console.log(remainingTasks);
+
   return (
     <>
       <div className="text-center">
@@ -130,11 +140,11 @@ const TodoArea = ({ userInfo }: TodoAreaType) => {
           type="text"
           className="border border-solid w-[300px] h-[50px] px-3 border-main"
           value={inputText}
-          // onChange={(e) => setInputText(e.target.value)}
+          onChange={(e) => setInputText(e.target.value)}
         />
         <button
           className="ml-2 w-[100px] h-[50px] border border-solid bg-accent border-main"
-          // onClick={() => addTask()}
+          onClick={() => addTask()}
         >
           追加
         </button>
@@ -146,23 +156,23 @@ const TodoArea = ({ userInfo }: TodoAreaType) => {
           残タスク
         </p>
         <ul className="mt-6">
-          {/* {userTasks.map((task, index) => (
+          {remainingTasks.map((task: any, index) => (
             <li className="my-3" key={index}>
               <label
-                htmlFor={`task_${index}`}
+                htmlFor={`task_${task.id}`}
                 className="flex items-center cursor-pointer"
               >
                 <input
-                  id={`task_${index}`}
+                  id={`task_${task.id}`}
                   type="checkbox"
                   className="cursor-pointer w-[20px] h-[20px]"
-                  value={task}
+                  value={task.todo}
                   onChange={(e) => handleRemained(e)}
                 />
-                <p className={`ml-2 relative`}>{task}</p>
+                <p className={`ml-2 relative`}>{task.todo}</p>
               </label>
             </li>
-          ))} */}
+          ))}
         </ul>
       </div>
 
