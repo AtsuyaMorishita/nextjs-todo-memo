@@ -99,6 +99,50 @@ const TodoArea = ({ currentUser }: TodoAreaType) => {
     }
   };
 
+  /**
+   * 完了タスクから残タスクへ移動
+   */
+  const handleCompleted = async (inputElement: any) => {
+    try {
+      //残タスクの状態を完了に変更
+      const checkTaskId = await inputElement.target.id;
+      await axios.put("/api/returnTask", {
+        currentUserId: currentUser.uid,
+        checkTaskId,
+      });
+
+      //全てのTodoを取得して画面に再描写
+      getTask();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * 完了タスクを全て削除する
+   */
+  const handleDeleteButton = async () => {
+    try {
+      //確認用のアラート
+      const isConfirm = confirm(
+        "完了タスクが全て削除されますが、よろしいでしょうか？"
+      );
+      if (!isConfirm) return;
+
+      //DBの全ての完了タスクを削除する
+      const reqData = {
+        currentUserId: currentUser.uid,
+      };
+      await axios.delete("/api/deleteCompleteTask", {
+        params: reqData,
+      });
+
+      //完了タスクをフロントに表示させる
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const finishTask = async (taskName: string) => {
     try {
       //DBの残タスクから完了タスクへ移動する
@@ -138,36 +182,6 @@ const TodoArea = ({ currentUser }: TodoAreaType) => {
       console.log(err);
     }
   };
-
-  //完了タスクのチェックボックスをクリック時の処理
-  const handleCompleted = async (taskName: string) => {
-    try {
-      // await returnTask(taskName);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const handleDeleteButton = async () => {
-    try {
-      const isConfirm = confirm(
-        "完了タスクが全て削除されますが、よろしいでしょうか？"
-      );
-      if (!isConfirm) return;
-      //DBの全ての完了タスクを削除する
-      // await axios.delete("/api/allDeleteTasks");
-
-      //完了タスクをフロントに表示させる
-      // const newUserInfo = await axios.get(
-      //   `/api/getUser?userId=${userInfo._id}`
-      // );
-      // setFinishTasks(newUserInfo.data[0]["completed-tasks"]);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  console.log(remainingTasks);
 
   return (
     <>
@@ -221,15 +235,15 @@ const TodoArea = ({ currentUser }: TodoAreaType) => {
           {completeTasks.map((task: any, index) => (
             <li className="my-3" key={index}>
               <label
-                htmlFor={`finishTask_${task.id}`}
+                htmlFor={`${task.id}`}
                 className="flex items-center cursor-pointer"
               >
                 <input
-                  id={`finishTask_${task.id}`}
+                  id={`${task.id}`}
                   type="checkbox"
                   className="cursor-pointer w-[20px] h-[20px]"
                   checked
-                  onChange={() => handleCompleted(task)}
+                  onChange={(e) => handleCompleted(e)}
                 />
                 <p className={`ml-2 relative ${activeStyle}`}>{task.todo}</p>
               </label>
@@ -239,7 +253,7 @@ const TodoArea = ({ currentUser }: TodoAreaType) => {
         <div className="text-right">
           <button
             className="border border-solid px-5 h-[50px] text-[14px] bg-main text-white border-white"
-            // onClick={() => handleDeleteButton()}
+            onClick={() => handleDeleteButton()}
           >
             全て削除する
           </button>
