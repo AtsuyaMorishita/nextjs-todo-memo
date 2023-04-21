@@ -137,7 +137,8 @@ const TodoArea = ({ currentUser }: TodoAreaType) => {
         params: reqData,
       });
 
-      //完了タスクをフロントに表示させる
+      //全てのTodoを取得して画面に再描写
+      setCompleteTasks([]);
     } catch (err) {
       console.log(err);
     }

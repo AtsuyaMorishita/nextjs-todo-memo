@@ -13,37 +13,27 @@ import {
 import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../../lib/firebase";
 
+/**
+ * 完了タスクを全て削除する
+ */
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const currentUserId: any = req.query.currentUserId;
-  const usersCollectionRef: any = collection(db, "user", currentUserId, "todo");
+  const usersCollectionRef = collection(db, "user", currentUserId, "todo");
 
-  // TODO: TodoコレクションでisCompleteフィールドがtrueのドキュメントを取得して、全て削除する処理を行う。
-
-  const result: any = query(
-    usersCollectionRef,
-    where("isComplete", "==", true)
-  );
-
-  // result
-  //   .get()
-  //   .then(() => {
-  //     deleteDoc(doc(db, result));
-  //   })
-  //   .catch((error: any) => {
-  //     console.log(error);
-  //   });
-
-  const todoSetShow = async () => {
+  const deleteTasks = () => {
     try {
-      /**
-       * 完了タスクを全て削除する
-       */
-      // await deleteDoc(result);
+      getDocs(query(usersCollectionRef, where("isComplete", "==", true))).then(
+        (snapshot) => {
+          snapshot.forEach((doc) => {
+            deleteDoc(doc.ref);
+          });
+        }
+      );
     } catch (error) {
       console.log(error);
     }
-
-    res.status(200).json({});
   };
-  todoSetShow();
+  deleteTasks();
+
+  res.status(200).json({});
 }
