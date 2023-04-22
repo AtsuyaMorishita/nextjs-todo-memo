@@ -15,6 +15,7 @@ type resDataType = {
 
 const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
   const [memoList, setMemoList] = useState([]);
+  const [activeItem, setActiveItem] = useState(null);
 
   useEffect(() => {
     getMemo();
@@ -104,17 +105,38 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     }
   };
 
+  /**
+   * クリックしたメモをアクティブ状態にする
+   */
+  const changeActiveMemo = (index: any) => {
+    setActiveItem(index);
+  };
+
+  const changeResetMemo = () => {
+    setActiveItem(null);
+  };
+
+  const activeStyle = `fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[90vh] h-[80vh] w-[80vw] bg-[#ededed]`;
+
   return (
     <>
       {isMemoArea && (
         <div>
           <button onClick={addMemo}>＋</button>
           <ul className="">
-            {memoList.map((memo: any) => (
+            {memoList.map((memo: any, index) => (
               <li
-                className="border p-5 max-h-[300px] overflow-y-scroll my-5"
+                className={`border p-5 max-h-[300px] overflow-y-scroll my-5 ${
+                  activeItem === index ? `${activeStyle} is-active` : ""
+                }`}
                 key={memo.id}
               >
+                {activeItem === index ? (
+                  <button onClick={changeResetMemo}>閉じる</button>
+                ) : (
+                  <button onClick={() => changeActiveMemo(index)}>開く</button>
+                )}
+
                 <button onClick={() => deleteMemo(memo.id)}>削除する</button>
                 <input
                   type="text"
