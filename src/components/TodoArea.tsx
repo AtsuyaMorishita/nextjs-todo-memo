@@ -10,14 +10,14 @@ type resDataType = {
   id: string;
   todo: string;
   isComplete: boolean;
-  date: string;
+  timestamp: string;
 };
 
 const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [isChecked, setsChecked] = useState(false); //チェックボックスの状態を管理
   const [inputText, setInputText] = useState(""); //タスクをテキストを管理
-  const [remainingTasks, setRemainingTasks] = useState([]); //残タスクを管理
-  const [completeTasks, setCompleteTasks] = useState([]); //完了タスクを管理
+  const [remainingTasks, setRemainingTasks] = useState<resDataType[]>([]); //残タスクを管理
+  const [completeTasks, setCompleteTasks] = useState<resDataType[]>([]); //完了タスクを管理
 
   //チェック時のスタイル
   const activeStyle = `after:absolute after:w-full after:h-[1px] after:left-0 after:top-[50%] after:bg-main`;
@@ -58,8 +58,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
     const dateStr = new Date().toLocaleString();
     const todoData = {
       id: getKey(),
-      isComplete: false,
       todo: inputText,
+      isComplete: false,
       timestamp: dateStr,
     };
     setRemainingTasks([todoData, ...remainingTasks]);
