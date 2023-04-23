@@ -11,6 +11,7 @@ type resDataType = {
   todo: string;
   isComplete: boolean;
   timestamp: string;
+  isChecked: boolean;
 };
 
 const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
@@ -32,7 +33,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    */
   const getTask = async () => {
     //全てのtodoを取得
-    const resData = await axios.post("/api/getTask", {
+    const resData = await axios.post("/api/todo/getTask", {
       currentUserId: currentUser.uid,
     });
 
@@ -53,6 +54,11 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    * タスクを追加する
    */
   const addTask = async () => {
+    if (inputText.length === 0) {
+      alert("タスクを入力してください。");
+      return;
+    }
+
     setInputText("");
 
     //todoをstateに追加する
@@ -63,22 +69,16 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       todo: inputText,
       isComplete: false,
       timestamp: dateStr,
+      isChecked: false,
     };
     setRemainingTasks([todoData, ...remainingTasks]);
 
     try {
       //todoをDBに追加する
-      await axios.post("/api/addTask", {
+      await axios.post("/api/todo/addTask", {
         currentUserId: currentUser.uid,
         todoData,
       });
-
-      //残タスクだけ絞り込み
-      // const resRemainingTasks = resData.data.filter((task: resDataType) => {
-      //   return task.isComplete === false;
-      // });
-
-      // setRemainingTasks(resRemainingTasks);
     } catch (err) {
       console.log(err);
     }
@@ -101,10 +101,11 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       const finishObj = remainingTasks.filter((elem: any) => {
         return elem.id === checkTaskId;
       });
+      finishObj[0].isChecked = true;
       setCompleteTasks([finishObj[0], ...completeTasks]);
 
       //タスクの状態をDBに保存
-      await axios.put("/api/finishTask", {
+      await axios.put("/api/todo/finishTask", {
         currentUserId: currentUser.uid,
         checkTaskId,
       });
@@ -121,19 +122,20 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       const checkTaskId = await inputElement.target.id;
 
       //完了タスクのstateを更新
-      const finishObj = completeTasks.filter((elem: any) => {
+      const changeFinishObj = completeTasks.filter((elem: any) => {
         return elem.id !== checkTaskId;
       });
-      setCompleteTasks(finishObj);
+      setCompleteTasks(changeFinishObj);
 
       //残タスクのstateを更新
-      const remainObj = completeTasks.filter((elem: any) => {
+      const changeRemainObj = completeTasks.filter((elem: any) => {
         return elem.id === checkTaskId;
       });
-      setRemainingTasks([remainObj[0], ...remainingTasks]);
+      changeRemainObj[0].isChecked = false;
+      setRemainingTasks([changeRemainObj[0], ...remainingTasks]);
 
       //タスクの状態をDBに保存
-      await axios.put("/api/returnTask", {
+      await axios.put("/api/todo/returnTask", {
         currentUserId: currentUser.uid,
         checkTaskId,
       });
@@ -160,7 +162,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       const reqData = {
         currentUserId: currentUser.uid,
       };
-      await axios.delete("/api/deleteCompleteTask", {
+      await axios.delete("/api/todo/deleteCompleteTask", {
         params: reqData,
       });
     } catch (err) {
@@ -204,6 +206,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
                       type="checkbox"
                       className="cursor-pointer w-[20px] h-[20px]"
                       value={task.todo}
+                      checked={task.isChecked}
                       onChange={(e) => handleRemained(e)}
                     />
                     <p className={`ml-2 relative`}>{task.todo}</p>
@@ -229,7 +232,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
                       id={`${task.id}`}
                       type="checkbox"
                       className="cursor-pointer w-[20px] h-[20px]"
-                      checked
+                      checked={task.isChecked}
                       onChange={(e) => handleCompleted(e)}
                     />
                     <p className={`ml-2 relative ${activeStyle}`}>

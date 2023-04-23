@@ -1,5 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../../../lib/firebase";
 
@@ -9,9 +16,15 @@ import { db } from "../../../../lib/firebase";
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const currentUserId: any = req.query.currentUserId;
   const currentMemoId: any = req.query.deleteElemId;
-  const currentMemoRef = doc(db, "user", currentUserId, "memo", currentMemoId);
+  const currentMemoRef = collection(db, "user", currentUserId, "memo");
 
-  deleteDoc(currentMemoRef);
+  getDocs(query(currentMemoRef, where("id", "==", currentMemoId))).then(
+    (snapshot) => {
+      snapshot.forEach((doc) => {
+        deleteDoc(doc.ref);
+      });
+    }
+  );
 
   res.status(200).json({});
 }

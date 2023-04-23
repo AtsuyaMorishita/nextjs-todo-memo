@@ -9,7 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { db } from "../../../lib/firebase";
+import { db } from "../../../../lib/firebase";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const checkTaskId = req.body.checkTaskId;
@@ -27,15 +27,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         (snapshot) => {
           snapshot.forEach((doc) => {
             updateDoc(doc.ref, {
-              isComplete: true,
+              isComplete: false,
+              isChecked: false,
             });
           });
         }
       );
-
-      // await updateDoc(todoDocRef, {
-      //   isComplete: true,
-      // });
     } catch (error) {
       console.log(error);
     }

@@ -1,10 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { db } from "../../../lib/firebase";
+import { db } from "../../../../lib/firebase";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const todoData = req.body.todoData;
   const currentUserId = req.body.currentUserId;
 
   const usersCollectionRef = collection(db, "user", currentUserId, "todo");
@@ -13,11 +12,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const todoSetShow = async () => {
     try {
-      /**
-       * DB(todo)にデータを格納する
-       */
-      await setDoc(doc(usersCollectionRef), todoData);
-
       /**
        * 全てのTodoを取得する
        */

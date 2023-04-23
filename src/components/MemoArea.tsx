@@ -6,8 +6,15 @@ type TodoAreaType = {
   isMemoArea: boolean;
 };
 
+type memoDataType = {
+  id: string;
+  memoTitle: string;
+  memoContent: string;
+  timestamp: string;
+};
+
 const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
-  const [memoList, setMemoList] = useState([]);
+  const [memoList, setMemoList] = useState<memoDataType[]>([]);
   const [activeItem, setActiveItem] = useState(null);
 
   useEffect(() => {
@@ -28,20 +35,23 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
    * 新しいメモを追加する
    */
   const addMemo = async () => {
-    //追加するデータ
+    //メモのstateを更新する
+    const getKey = () => Math.random().toString(32).substring(2);
     const dateStr = new Date().toLocaleString();
     const memoData = {
+      id: getKey(),
       memoTitle: "",
       memoContent: "",
       timestamp: dateStr,
     };
+    setMemoList([memoData, ...memoList]);
 
     try {
-      const resData = await axios.post("/api/memo/addMemo", {
+      //メモデータをDBに保存する
+      await axios.post("/api/memo/addMemo", {
         currentUserId: currentUser.uid,
         memoData,
       });
-      setMemoList(resData.data);
     } catch (error) {
       console.log(error);
     }
@@ -55,16 +65,22 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     const isConfirm = confirm("メモが削除されますが、よろしいでしょうか？");
     if (!isConfirm) return;
 
+    //メモをstateから削除する
+    const memoArray = memoList.filter((elem) => {
+      return elem.id !== elemId;
+    });
+    setMemoList(memoArray);
+
     try {
+      //メモをDBから削除する
       const reqData = {
         currentUserId: currentUser.uid,
         deleteElemId: elemId,
       };
+
       await axios.delete("/api/memo/deleteMemo", {
         params: reqData,
       });
-
-      getMemo();
     } catch (error) {
       console.log(error);
     }
@@ -117,33 +133,59 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     <>
       {isMemoArea && (
         <div>
-          <button onClick={addMemo}>＋</button>
-          <ul className="">
+          <div className="text-center">
+            <button
+              className="text-lg border border-solid bg-accent border-main w-[50px] h-[50px]"
+              onClick={addMemo}
+            >
+              ＋
+            </button>
+          </div>
+          <ul className="md:flex flex-wrap">
             {memoList.map((memo: any, index) => (
               <li
-                className={`border p-5 max-h-[300px] overflow-y-scroll my-5 ${
+                className={`border p-5 max-h-400px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
                   activeItem === index ? `${activeStyle} is-active` : ""
                 }`}
                 key={memo.id}
               >
                 {activeItem === index ? (
-                  <button onClick={changeResetMemo}>閉じる</button>
+                  <button className="" onClick={changeResetMemo}>
+                    閉じる
+                  </button>
                 ) : (
-                  <button onClick={() => changeActiveMemo(index)}>開く</button>
+                  <button
+                    className="block w-[100%] border py-2"
+                    onClick={() => changeActiveMemo(index)}
+                  >
+                    開く
+                  </button>
                 )}
 
-                <button onClick={() => deleteMemo(memo.id)}>削除する</button>
                 <input
                   type="text"
-                  className="text-md"
+                  className="text-md block w-[100%] p-2 mt-4"
                   defaultValue={memo.memoTitle}
                   onChange={(e) => editMemoTitle(e.target.value, memo.id)}
                 />
                 <textarea
-                  className="text-sm"
+                  className="text-sm block w-[100%] p-2 mt-4 h-60"
                   defaultValue={memo.memoContent}
                   onChange={(e) => editMemoContent(e.target.value, memo.id)}
                 />
+
+                {activeItem === index ? (
+                  ""
+                ) : (
+                  <div className="text-right mt-4">
+                    <button
+                      className="text-sm"
+                      onClick={() => deleteMemo(memo.id)}
+                    >
+                      削除する
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

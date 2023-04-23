@@ -11,7 +11,7 @@ import {
   where,
 } from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { db } from "../../../lib/firebase";
+import { db } from "../../../../lib/firebase";
 
 /**
  * 完了タスクを全て削除する
