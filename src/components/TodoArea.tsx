@@ -53,6 +53,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    * タスクを追加する
    */
   const addTask = async () => {
+    setInputText("");
+
     //todoをstateに追加する
     const getKey = () => Math.random().toString(32).substring(2);
     const dateStr = new Date().toLocaleString();
@@ -70,8 +72,6 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
         currentUserId: currentUser.uid,
         todoData,
       });
-
-      setInputText("");
 
       //残タスクだけ絞り込み
       // const resRemainingTasks = resData.data.filter((task: resDataType) => {
