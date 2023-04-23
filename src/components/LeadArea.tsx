@@ -1,8 +1,4 @@
 import { Memory, TodayOutlined } from "@mui/icons-material";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import ButtonTask from "./ButtonTask";
 
 type LeadAreaType = {
   currentUser: any;

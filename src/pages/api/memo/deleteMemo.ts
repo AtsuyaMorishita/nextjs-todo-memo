@@ -11,14 +11,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const currentMemoId: any = req.query.deleteElemId;
   const currentMemoRef = doc(db, "user", currentUserId, "memo", currentMemoId);
 
-  const deleteTasks = () => {
-    try {
-      deleteDoc(currentMemoRef);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  deleteTasks();
+  deleteDoc(currentMemoRef);
 
   res.status(200).json({});
 }

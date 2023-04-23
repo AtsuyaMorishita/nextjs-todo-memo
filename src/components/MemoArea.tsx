@@ -6,13 +6,6 @@ type TodoAreaType = {
   isMemoArea: boolean;
 };
 
-type resDataType = {
-  id: string;
-  todo: string;
-  isComplete: boolean;
-  date: string;
-};
-
 const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
   const [memoList, setMemoList] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
@@ -36,9 +29,11 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
    */
   const addMemo = async () => {
     //追加するデータ
+    const dateStr = new Date().toLocaleString();
     const memoData = {
       memoTitle: "",
       memoContent: "",
+      timestamp: dateStr,
     };
 
     try {

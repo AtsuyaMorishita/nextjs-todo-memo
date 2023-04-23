@@ -53,27 +53,32 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    * タスクを追加する
    */
   const addTask = async () => {
-    //追加するデータ
+    //todoをstateに追加する
+    const getKey = () => Math.random().toString(32).substring(2);
+    const dateStr = new Date().toLocaleString();
     const todoData = {
-      date: "4月1日",
+      id: getKey(),
       isComplete: false,
       todo: inputText,
+      timestamp: dateStr,
     };
+    setRemainingTasks([todoData, ...remainingTasks]);
 
     try {
-      //全てのtodoを取得
-      const resData = await axios.post("/api/addTask", {
+      //todoをDBに追加する
+      await axios.post("/api/addTask", {
         currentUserId: currentUser.uid,
         todoData,
       });
 
-      //残タスクだけ絞り込み
-      const resRemainingTasks = resData.data.filter((task: resDataType) => {
-        return task.isComplete === false;
-      });
-
-      setRemainingTasks(resRemainingTasks);
       setInputText("");
+
+      //残タスクだけ絞り込み
+      // const resRemainingTasks = resData.data.filter((task: resDataType) => {
+      //   return task.isComplete === false;
+      // });
+
+      // setRemainingTasks(resRemainingTasks);
     } catch (err) {
       console.log(err);
     }
@@ -84,15 +89,25 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    */
   const handleRemained = async (inputElement: any) => {
     try {
-      //残タスクの状態を完了に変更
       const checkTaskId = await inputElement.target.id;
+
+      //残タスクのstateを更新
+      const remainObj = remainingTasks.filter((elem: any) => {
+        return elem.id !== checkTaskId;
+      });
+      setRemainingTasks(remainObj);
+
+      //完了タスクのstateを更新
+      const finishObj = remainingTasks.filter((elem: any) => {
+        return elem.id === checkTaskId;
+      });
+      setCompleteTasks([finishObj[0], ...completeTasks]);
+
+      //タスクの状態をDBに保存
       await axios.put("/api/finishTask", {
         currentUserId: currentUser.uid,
         checkTaskId,
       });
-
-      //全てのTodoを取得して画面に再描写
-      getTask();
     } catch (err) {
       console.log(err);
     }
@@ -103,15 +118,25 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    */
   const handleCompleted = async (inputElement: any) => {
     try {
-      //残タスクの状態を完了に変更
       const checkTaskId = await inputElement.target.id;
+
+      //完了タスクのstateを更新
+      const finishObj = completeTasks.filter((elem: any) => {
+        return elem.id !== checkTaskId;
+      });
+      setCompleteTasks(finishObj);
+
+      //残タスクのstateを更新
+      const remainObj = completeTasks.filter((elem: any) => {
+        return elem.id === checkTaskId;
+      });
+      setRemainingTasks([remainObj[0], ...remainingTasks]);
+
+      //タスクの状態をDBに保存
       await axios.put("/api/returnTask", {
         currentUserId: currentUser.uid,
         checkTaskId,
       });
-
-      //全てのTodoを取得して画面に再描写
-      getTask();
     } catch (err) {
       console.log(err);
     }
@@ -128,6 +153,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       );
       if (!isConfirm) return;
 
+      //完了タスクのstateを空にする
+      setCompleteTasks([]);
+
       //DBの全ての完了タスクを削除する
       const reqData = {
         currentUserId: currentUser.uid,
@@ -135,9 +163,6 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       await axios.delete("/api/deleteCompleteTask", {
         params: reqData,
       });
-
-      //全てのTodoを取得して画面に再描写
-      setCompleteTasks([]);
     } catch (err) {
       console.log(err);
     }
