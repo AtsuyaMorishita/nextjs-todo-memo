@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: AuthType) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? <p>loading...</p> : children}
+      {loading ? <p className="text-center">ローディング中...</p> : children}
     </AuthContext.Provider>
   );
 };

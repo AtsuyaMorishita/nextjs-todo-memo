@@ -1,15 +1,26 @@
 import { async } from "@firebase/util";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+} from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { auth, db, provider } from "../../lib/firebase";
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      user && router.push("/");
+    });
+  }, []);
 
   /**
    * メールアドレスのログイン
@@ -44,10 +55,15 @@ export default function Login() {
   const onGoogleLogin = async (e: any) => {
     e.preventDefault();
 
-    await signInWithPopup(auth, provider).catch((error) =>
-      alert(error.message)
-    );
+    await signInWithRedirect(auth, provider);
+
+    console.log("google認証完了");
+
+    // await signInWithPopup(auth, provider).catch((error) =>
+    //   alert(error.message)
+    // );
     router.push("/");
+    console.log("認証後リダイレクト完了");
   };
 
   return (

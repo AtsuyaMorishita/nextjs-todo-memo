@@ -5,7 +5,6 @@ import { db } from "../../../../lib/firebase";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const currentUserId = req.body.currentUserId;
-
   const usersCollectionRef = collection(db, "user", currentUserId, "todo");
 
   let allTodos: any = [];
