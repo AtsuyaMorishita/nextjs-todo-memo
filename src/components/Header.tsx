@@ -9,9 +9,16 @@ import { useAuthContext } from "@/context/AuthContext";
 type HeaderType = {
   pageTitle?: string;
   currentUser: any;
+  showChange: () => void;
+  isTodoArea: boolean;
 };
 
-const Header = ({ pageTitle, currentUser }: HeaderType) => {
+const Header = ({
+  pageTitle,
+  currentUser,
+  showChange,
+  isTodoArea,
+}: HeaderType) => {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -29,6 +36,9 @@ const Header = ({ pageTitle, currentUser }: HeaderType) => {
       <header className="border-b-2">
         <div className="flex justify-between px-8 max-w-7xl h-16">
           <h1 className="flex justify-center flex-col text-xl">TODO&メモ</h1>
+          <button onClick={showChange}>
+            {isTodoArea ? "メモに切り替え" : "Todoへ切り替え"}
+          </button>
           {currentUser && (
             <button className="text-sm" onClick={handleLogout}>
               ログアウト

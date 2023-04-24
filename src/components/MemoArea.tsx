@@ -130,68 +130,61 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
   const activeStyle = `fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[90vh] h-[80vh] w-[80vw] bg-[#ededed]`;
 
   return (
-    <>
-      {isMemoArea && (
-        <div>
-          <div className="text-center">
-            <button
-              className="text-lg border border-solid bg-accent border-main w-[50px] h-[50px]"
-              onClick={addMemo}
-            >
-              ＋
-            </button>
-          </div>
-          <ul className="md:flex flex-wrap">
-            {memoList.map((memo: any, index) => (
-              <li
-                className={`border p-5 max-h-400px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
-                  activeItem === index ? `${activeStyle} is-active` : ""
-                }`}
-                key={memo.id}
+    <div className={`${isMemoArea || "hidden"}`}>
+      <div className="text-center">
+        <button
+          className="text-lg border border-solid bg-accent border-main w-[50px] h-[50px]"
+          onClick={addMemo}
+        >
+          ＋
+        </button>
+      </div>
+      <ul className="md:flex flex-wrap">
+        {memoList.map((memo: any, index) => (
+          <li
+            className={`border p-5 max-h-400px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
+              activeItem === index ? `${activeStyle} is-active` : ""
+            }`}
+            key={memo.id}
+          >
+            {activeItem === index ? (
+              <button className="" onClick={changeResetMemo}>
+                閉じる
+              </button>
+            ) : (
+              <button
+                className="block w-[100%] border py-2"
+                onClick={() => changeActiveMemo(index)}
               >
-                {activeItem === index ? (
-                  <button className="" onClick={changeResetMemo}>
-                    閉じる
-                  </button>
-                ) : (
-                  <button
-                    className="block w-[100%] border py-2"
-                    onClick={() => changeActiveMemo(index)}
-                  >
-                    開く
-                  </button>
-                )}
+                開く
+              </button>
+            )}
 
-                <input
-                  type="text"
-                  className="text-md block w-[100%] p-2 mt-4"
-                  defaultValue={memo.memoTitle}
-                  onChange={(e) => editMemoTitle(e.target.value, memo.id)}
-                />
-                <textarea
-                  className="text-sm block w-[100%] p-2 mt-4 h-60"
-                  defaultValue={memo.memoContent}
-                  onChange={(e) => editMemoContent(e.target.value, memo.id)}
-                />
+            <input
+              type="text"
+              className="text-md block w-[100%] p-2 mt-4"
+              defaultValue={memo.memoTitle}
+              onChange={(e) => editMemoTitle(e.target.value, memo.id)}
+            />
+            <textarea
+              className="text-sm block w-[100%] p-2 mt-4 h-60"
+              defaultValue={memo.memoContent}
+              onChange={(e) => editMemoContent(e.target.value, memo.id)}
+            />
 
-                {activeItem === index ? (
-                  ""
-                ) : (
-                  <div className="text-right mt-4">
-                    <button
-                      className="text-sm"
-                      onClick={() => deleteMemo(memo.id)}
-                    >
-                      削除する
-                    </button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </>
+            {activeItem === index ? (
+              ""
+            ) : (
+              <div className="text-right mt-4">
+                <button className="text-sm" onClick={() => deleteMemo(memo.id)}>
+                  削除する
+                </button>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

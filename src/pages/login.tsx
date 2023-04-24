@@ -1,9 +1,10 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { async } from "@firebase/util";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { auth, db } from "../../lib/firebase";
+import { auth, db, provider } from "../../lib/firebase";
 
 export default function Login() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   /**
-   * ユーザーログイン
+   * メールアドレスのログイン
    */
   const onLogin = async (e: any) => {
     e.preventDefault();
@@ -25,8 +26,6 @@ export default function Login() {
           if (!docSnap.exists()) {
             await setDoc(doc(db, "user", user.uid), {});
           }
-
-          alert("ログインできました！");
           router.push("/");
         })
         .catch((error) => {
@@ -38,33 +37,68 @@ export default function Login() {
     }
   };
 
+  /**
+   * Googleアカウントのログイン
+   */
+  // const [user, loading, error] = useAuthState(auth);
+  const onGoogleLogin = async (e: any) => {
+    e.preventDefault();
+
+    await signInWithPopup(auth, provider).catch((error) =>
+      alert(error.message)
+    );
+    router.push("/");
+  };
+
   return (
-    <div>
-      <form onSubmit={onLogin}>
+    <div className="w-[100vw] h-[100vh] flex items-center justify-center px-8 md:px-0">
+      <div className="text-center w-[350px] max-[100%]">
+        <h1 className="text-[30px] font-bold mb-6">ログイン</h1>
+        {/* Googleアカウントでログイン */}
         <div>
-          <label>メールアドレス</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <button
+            onClick={onGoogleLogin}
+            className="border-[3px] border-[#333] w-[100%] rounded-md h-[50px]"
+          >
+            Googleアカウントでログイン
+          </button>
         </div>
-        <div>
-          <label>パスワード</label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit">ログイン</button>
-        <div>
-          <Link href="/signup">ユーザー登録がお済みでない方はこちらから</Link>
-          {/* <Link href="/sendemail">パスワードをお忘れの方はこちらから</Link> */}
-        </div>
-      </form>
+        <p className="py-3 text-lg">or</p>
+        {/* メールアドレスでログイン */}
+        <form onSubmit={onLogin}>
+          <div>
+            <input
+              type="email"
+              required
+              value={email}
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+              className="border-[3px] border-[#333] w-[100%] rounded-md px-3 h-[50px]"
+            />
+          </div>
+          <div className="mt-4">
+            <input
+              type="password"
+              required
+              value={password}
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="border-[3px] border-[#333] w-[100%] rounded-md px-3 h-[50px]"
+            />
+          </div>
+          <button
+            type="submit"
+            className="border-[3px] border-[#333] w-[100%] rounded-md mt-8 h-[50px]"
+          >
+            ログイン
+          </button>
+          <div className="mt-3">
+            <Link href="/signup" className="text-sm">
+              ユーザー登録がお済みでない方はこちらから
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

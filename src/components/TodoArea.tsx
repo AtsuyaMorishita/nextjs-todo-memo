@@ -171,89 +171,83 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   };
 
   return (
-    <>
-      {isTodoArea && (
-        <>
-          <div className="text-center">
-            <input
-              type="text"
-              className="border border-solid w-[300px] h-[50px] px-3 border-main"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-            />
-            <button
-              className="ml-2 w-[100px] h-[50px] border border-solid bg-accent border-main"
-              onClick={() => addTask()}
-            >
-              追加
-            </button>
-          </div>
+    <div className={`${isTodoArea || "hidden"}`}>
+      <div className="text-center">
+        <input
+          type="text"
+          className="border border-solid w-[300px] h-[50px] px-3 border-main"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+        />
+        <button
+          className="ml-2 w-[100px] h-[50px] border border-solid bg-accent border-main"
+          onClick={() => addTask()}
+        >
+          追加
+        </button>
+      </div>
 
-          {/* 残タスク */}
-          <div className="border border-solid border-main p-10 mt-8">
-            <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
-              残タスク
-            </p>
-            <ul className="mt-6">
-              {remainingTasks.map((task: any, index) => (
-                <li className="my-3" key={index}>
-                  <label
-                    htmlFor={`${task.id}`}
-                    className="flex items-center cursor-pointer"
-                  >
-                    <input
-                      id={`${task.id}`}
-                      type="checkbox"
-                      className="cursor-pointer w-[20px] h-[20px]"
-                      value={task.todo}
-                      checked={task.isChecked}
-                      onChange={(e) => handleRemained(e)}
-                    />
-                    <p className={`ml-2 relative`}>{task.todo}</p>
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* 完了タスク */}
-          <div className="border border-solid border-main p-10 mt-8">
-            <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
-              完了タスク
-            </p>
-            <ul className="mt-6">
-              {completeTasks.map((task: any, index) => (
-                <li className="my-3" key={index}>
-                  <label
-                    htmlFor={`${task.id}`}
-                    className="flex items-center cursor-pointer"
-                  >
-                    <input
-                      id={`${task.id}`}
-                      type="checkbox"
-                      className="cursor-pointer w-[20px] h-[20px]"
-                      checked={task.isChecked}
-                      onChange={(e) => handleCompleted(e)}
-                    />
-                    <p className={`ml-2 relative ${activeStyle}`}>
-                      {task.todo}
-                    </p>
-                  </label>
-                </li>
-              ))}
-            </ul>
-            <div className="text-right">
-              <button
-                className="border border-solid px-5 h-[50px] text-[14px] bg-main text-white border-white"
-                onClick={() => handleDeleteButton()}
+      {/* 残タスク */}
+      <div className="border border-solid border-main p-10 mt-8">
+        <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
+          残タスク
+        </p>
+        <ul className="mt-6">
+          {remainingTasks.map((task: any, index) => (
+            <li className="my-3" key={index}>
+              <label
+                htmlFor={`${task.id}`}
+                className="flex items-center cursor-pointer"
               >
-                全て削除する
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-    </>
+                <input
+                  id={`${task.id}`}
+                  type="checkbox"
+                  className="cursor-pointer w-[20px] h-[20px]"
+                  value={task.todo}
+                  checked={task.isChecked}
+                  onChange={(e) => handleRemained(e)}
+                />
+                <p className={`ml-2 relative`}>{task.todo}</p>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 完了タスク */}
+      <div className="border border-solid border-main p-10 mt-8">
+        <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
+          完了タスク
+        </p>
+        <ul className="mt-6">
+          {completeTasks.map((task: any, index) => (
+            <li className="my-3" key={index}>
+              <label
+                htmlFor={`${task.id}`}
+                className="flex items-center cursor-pointer"
+              >
+                <input
+                  id={`${task.id}`}
+                  type="checkbox"
+                  className="cursor-pointer w-[20px] h-[20px]"
+                  checked={task.isChecked}
+                  onChange={(e) => handleCompleted(e)}
+                />
+                <p className={`ml-2 relative ${activeStyle}`}>{task.todo}</p>
+              </label>
+            </li>
+          ))}
+        </ul>
+        <div className="text-right">
+          <button
+            className="border border-solid px-5 h-[50px] text-[14px] bg-main text-white border-white"
+            onClick={() => handleDeleteButton()}
+          >
+            全て削除する
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

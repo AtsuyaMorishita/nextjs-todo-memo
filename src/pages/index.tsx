@@ -22,9 +22,18 @@ export default function Home() {
     setIsMemoArea(true);
   };
 
+  const showChange = () => {
+    setIsTodoArea(!isTodoArea);
+    setIsMemoArea(!isMemoArea);
+  };
+
   return (
     <div>
-      <Header currentUser={currentUser} />
+      <Header
+        currentUser={currentUser}
+        showChange={showChange}
+        isTodoArea={isTodoArea}
+      />
 
       <Layout>
         <LeadArea

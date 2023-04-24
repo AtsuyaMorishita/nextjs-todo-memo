@@ -32,31 +32,46 @@ export default function Signup() {
   };
 
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>メールアドレス</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>パスワード</label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <button type="submit">サインアップ</button>
-        </div>
-        <Link href={"/login"}>登録済みの方はこちら</Link>
-      </form>
+    <div className="w-[100vw] h-[100vh] flex items-center justify-center px-8 md:px-0">
+      <div className="text-center w-[350px] max-[100%]">
+        <h1 className="text-[30px] font-bold mb-6">会員登録</h1>
+
+        <form onSubmit={onSubmit}>
+          <div>
+            <input
+              type="email"
+              required
+              value={email}
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+              className="border-[3px] border-[#333] w-[100%] rounded-md px-3 h-[50px]"
+            />
+          </div>
+          <div className="mt-4">
+            <input
+              type="password"
+              required
+              value={password}
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="border-[3px] border-[#333] w-[100%] rounded-md px-3 h-[50px]"
+            />
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="border-[3px] border-[#333] w-[100%] rounded-md mt-8 h-[50px]"
+            >
+              サインアップ
+            </button>
+          </div>
+          <div className="mt-3">
+            <Link href={"/login"} className="text-sm">
+              登録済みの方はこちら
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
