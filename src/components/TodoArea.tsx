@@ -19,6 +19,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [inputText, setInputText] = useState(""); //タスクをテキストを管理
   const [remainingTasks, setRemainingTasks] = useState<resDataType[]>([]); //残タスクを管理
   const [completeTasks, setCompleteTasks] = useState<resDataType[]>([]); //完了タスクを管理
+  const [isLoad, setIsLoad] = useState(true); //タスクの読み込み状態を管理
 
   //チェック時のスタイル
   const activeStyle = `after:absolute after:w-full after:h-[1px] after:left-0 after:top-[50%] after:bg-main`;
@@ -26,6 +27,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
 
   useEffect(() => {
     getTask();
+    return () => setIsLoad(true);
   }, []);
 
   /**
@@ -48,6 +50,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       return task.isComplete === true;
     });
     setCompleteTasks(resCompleteTasks);
+
+    setIsLoad(false);
   };
 
   /**
@@ -192,26 +196,30 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
         <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
           残タスク
         </p>
-        <ul className="mt-6">
-          {remainingTasks.map((task: any, index) => (
-            <li className="my-3" key={index}>
-              <label
-                htmlFor={`${task.id}`}
-                className="flex items-center cursor-pointer"
-              >
-                <input
-                  id={`${task.id}`}
-                  type="checkbox"
-                  className="cursor-pointer w-[20px] h-[20px]"
-                  value={task.todo}
-                  checked={task.isChecked}
-                  onChange={(e) => handleRemained(e)}
-                />
-                <p className={`ml-2 relative`}>{task.todo}</p>
-              </label>
-            </li>
-          ))}
-        </ul>
+        {!isLoad ? (
+          <ul className="mt-6">
+            {remainingTasks.map((task: any, index) => (
+              <li className="my-3" key={index}>
+                <label
+                  htmlFor={`${task.id}`}
+                  className="flex items-center cursor-pointer"
+                >
+                  <input
+                    id={`${task.id}`}
+                    type="checkbox"
+                    className="cursor-pointer w-[20px] h-[20px]"
+                    value={task.todo}
+                    checked={task.isChecked}
+                    onChange={(e) => handleRemained(e)}
+                  />
+                  <p className={`ml-2 relative`}>{task.todo}</p>
+                </label>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>読み込み中・・・</p>
+        )}
       </div>
 
       {/* 完了タスク */}
@@ -219,25 +227,30 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
         <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
           完了タスク
         </p>
-        <ul className="mt-6">
-          {completeTasks.map((task: any, index) => (
-            <li className="my-3" key={index}>
-              <label
-                htmlFor={`${task.id}`}
-                className="flex items-center cursor-pointer"
-              >
-                <input
-                  id={`${task.id}`}
-                  type="checkbox"
-                  className="cursor-pointer w-[20px] h-[20px]"
-                  checked={task.isChecked}
-                  onChange={(e) => handleCompleted(e)}
-                />
-                <p className={`ml-2 relative ${activeStyle}`}>{task.todo}</p>
-              </label>
-            </li>
-          ))}
-        </ul>
+        {!isLoad ? (
+          <ul className="mt-6">
+            {completeTasks.map((task: any, index) => (
+              <li className="my-3" key={index}>
+                <label
+                  htmlFor={`${task.id}`}
+                  className="flex items-center cursor-pointer"
+                >
+                  <input
+                    id={`${task.id}`}
+                    type="checkbox"
+                    className="cursor-pointer w-[20px] h-[20px]"
+                    checked={task.isChecked}
+                    onChange={(e) => handleCompleted(e)}
+                  />
+                  <p className={`ml-2 relative ${activeStyle}`}>{task.todo}</p>
+                </label>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>読み込み中・・・</p>
+        )}
+
         <div className="text-right">
           <button
             className="border border-solid px-5 h-[50px] text-[14px] bg-main text-white border-white"
