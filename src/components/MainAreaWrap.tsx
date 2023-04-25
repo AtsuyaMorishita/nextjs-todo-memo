@@ -12,7 +12,7 @@ type MainAreaWrapType = {
  */
 const MainAreaWrap = ({ children }: MainAreaWrapType) => {
   return (
-    <div className="bg-gray-100">
+    <div className="">
       <Layout>{children}</Layout>
     </div>
   );

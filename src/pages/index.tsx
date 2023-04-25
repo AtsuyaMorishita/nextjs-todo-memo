@@ -50,7 +50,7 @@ export default function Home() {
             isTodoArea={isTodoArea}
           />
 
-          <Layout>
+          {/* <Layout>
             <LeadArea
               currentUser={currentUser}
               showTodo={showTodo}
@@ -58,7 +58,7 @@ export default function Home() {
               isTodoArea={isTodoArea}
               isMemoArea={isMemoArea}
             />
-          </Layout>
+          </Layout> */}
 
           <MainAreaWrap>
             <TodoArea currentUser={currentUser} isTodoArea={isTodoArea} />

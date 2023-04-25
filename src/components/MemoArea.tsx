@@ -142,7 +142,7 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
       <ul className="md:flex flex-wrap">
         {memoList.map((memo: any, index) => (
           <li
-            className={`border p-5 max-h-400px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
+            className={`border max-h-400px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
               activeItem === index ? `${activeStyle} is-active` : ""
             }`}
             key={memo.id}
@@ -159,18 +159,19 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
                 開く
               </button>
             )}
-
-            <input
-              type="text"
-              className="text-md block w-[100%] p-2 mt-4"
-              defaultValue={memo.memoTitle}
-              onBlur={(e) => editMemoTitle(e.target.value, memo.id)}
-            />
-            <textarea
-              className="text-sm block w-[100%] p-2 mt-4 h-60"
-              defaultValue={memo.memoContent}
-              onBlur={(e) => editMemoContent(e.target.value, memo.id)}
-            />
+            <div className="p-5" onClick={() => changeActiveMemo(index)}>
+              <input
+                type="text"
+                className="text-md block w-[100%] p-2 mt-4"
+                defaultValue={memo.memoTitle}
+                onBlur={(e) => editMemoTitle(e.target.value, memo.id)}
+              />
+              <textarea
+                className="text-sm block w-[100%] p-2 mt-4 h-60"
+                defaultValue={memo.memoContent}
+                onBlur={(e) => editMemoContent(e.target.value, memo.id)}
+              />
+            </div>
 
             {activeItem === index ? (
               ""

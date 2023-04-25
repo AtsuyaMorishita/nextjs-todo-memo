@@ -175,31 +175,30 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   };
 
   return (
-    <div className={`${isTodoArea || "hidden"}`}>
-      <div className="text-center">
-        <input
-          type="text"
-          className="border border-solid w-[300px] h-[50px] px-3 border-main"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-        />
-        <button
-          className="ml-2 w-[100px] h-[50px] border border-solid bg-accent border-main"
-          onClick={() => addTask()}
-        >
-          追加
-        </button>
-      </div>
-
+    <div className={`${isTodoArea || "hidden"} max-w-lg mx-auto`}>
       {/* 残タスク */}
-      <div className="border border-solid border-main p-10 mt-8">
-        <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
-          残タスク
+      <div className="">
+        <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent mb-6">
+          Todo
         </p>
+
+        <div className="text-center flex items-center">
+          <button className="text-2xl font-bold" onClick={() => addTask()}>
+            ＋
+          </button>
+          <input
+            type="text"
+            className="border-main bg-transparent focus:outline-none ml-4"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="タスクを入力"
+          />
+        </div>
+
         {!isLoad ? (
-          <ul className="mt-6">
+          <ul className="mt-4">
             {remainingTasks.map((task: any, index) => (
-              <li className="my-3" key={index}>
+              <li className="my-4" key={index}>
                 <label
                   htmlFor={`${task.id}`}
                   className="flex items-center cursor-pointer"
@@ -207,12 +206,12 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
                   <input
                     id={`${task.id}`}
                     type="checkbox"
-                    className="cursor-pointer w-[20px] h-[20px]"
+                    className="cursor-pointer w-[25px] h-[25px]"
                     value={task.todo}
                     checked={task.isChecked}
                     onChange={(e) => handleRemained(e)}
                   />
-                  <p className={`ml-2 relative`}>{task.todo}</p>
+                  <p className="ml-4 relative">{task.todo}</p>
                 </label>
               </li>
             ))}
@@ -223,9 +222,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       </div>
 
       {/* 完了タスク */}
-      <div className="border border-solid border-main p-10 mt-8">
-        <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent">
-          完了タスク
+      <div className="mt-10">
+        <p className="text-md font-bold block text-center">
+          チェック済みタスク
         </p>
         {!isLoad ? (
           <ul className="mt-6">
@@ -233,16 +232,16 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
               <li className="my-3" key={index}>
                 <label
                   htmlFor={`${task.id}`}
-                  className="flex items-center cursor-pointer"
+                  className="flex items-center cursor-pointer opacity-50"
                 >
                   <input
                     id={`${task.id}`}
                     type="checkbox"
-                    className="cursor-pointer w-[20px] h-[20px]"
+                    className="cursor-pointer w-[25px] h-[25px]"
                     checked={task.isChecked}
                     onChange={(e) => handleCompleted(e)}
                   />
-                  <p className={`ml-2 relative ${activeStyle}`}>{task.todo}</p>
+                  <p className={`ml-4 relative ${activeStyle}`}>{task.todo}</p>
                 </label>
               </li>
             ))}
@@ -251,14 +250,18 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
           <p>読み込み中・・・</p>
         )}
 
-        <div className="text-right">
-          <button
-            className="border border-solid px-5 h-[50px] text-[14px] bg-main text-white border-white"
-            onClick={() => handleDeleteButton()}
-          >
-            全て削除する
-          </button>
-        </div>
+        {completeTasks.length ? (
+          <div className="text-right">
+            <button
+              className="border border-solid p-3 text-xs bg-main text-white border-white"
+              onClick={() => handleDeleteButton()}
+            >
+              チェック済みを削除
+            </button>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
