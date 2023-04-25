@@ -22,8 +22,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [isLoad, setIsLoad] = useState(true); //タスクの読み込み状態を管理
 
   //チェック時のスタイル
-  const activeStyle = `after:absolute after:w-full after:h-[1px] after:left-0 after:top-[50%] after:bg-main`;
-  const checkedStyle = isChecked ? activeStyle : "";
+  // const activeStyle = `after:absolute after:w-full after:h-[1px] after:left-0 after:top-[50%] after:bg-main`;
+  // const checkedStyle = isChecked ? activeStyle : "";
 
   useEffect(() => {
     getTask();
@@ -211,7 +211,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
                     checked={task.isChecked}
                     onChange={(e) => handleRemained(e)}
                   />
-                  <p className="ml-4 relative">{task.todo}</p>
+                  <p className="ml-4 relative w-[90%]">{task.todo}</p>
                 </label>
               </li>
             ))}
@@ -241,7 +241,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
                     checked={task.isChecked}
                     onChange={(e) => handleCompleted(e)}
                   />
-                  <p className={`ml-4 relative ${activeStyle}`}>{task.todo}</p>
+                  <p className="ml-4 line-through w-[90%]">{task.todo}</p>
                 </label>
               </li>
             ))}
