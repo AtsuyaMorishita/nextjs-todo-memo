@@ -56,14 +56,10 @@ export default function Login() {
     e.preventDefault();
 
     await signInWithRedirect(auth, provider);
-
-    console.log("google認証完了");
-
     // await signInWithPopup(auth, provider).catch((error) =>
     //   alert(error.message)
     // );
     router.push("/");
-    console.log("認証後リダイレクト完了");
   };
 
   return (

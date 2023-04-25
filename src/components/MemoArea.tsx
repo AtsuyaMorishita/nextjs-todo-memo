@@ -164,12 +164,12 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
               type="text"
               className="text-md block w-[100%] p-2 mt-4"
               defaultValue={memo.memoTitle}
-              onChange={(e) => editMemoTitle(e.target.value, memo.id)}
+              onBlur={(e) => editMemoTitle(e.target.value, memo.id)}
             />
             <textarea
               className="text-sm block w-[100%] p-2 mt-4 h-60"
               defaultValue={memo.memoContent}
-              onChange={(e) => editMemoContent(e.target.value, memo.id)}
+              onBlur={(e) => editMemoContent(e.target.value, memo.id)}
             />
 
             {activeItem === index ? (
