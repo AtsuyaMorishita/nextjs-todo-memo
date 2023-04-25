@@ -84,6 +84,8 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     } catch (error) {
       console.log(error);
     }
+
+    setActiveItem(null);
   };
 
   /**
@@ -120,6 +122,7 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
    * クリックしたメモをアクティブ状態にする
    */
   const changeActiveMemo = (index: any) => {
+    console.log("メモを開く！");
     setActiveItem(index);
   };
 
@@ -127,61 +130,69 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     setActiveItem(null);
   };
 
-  const activeStyle = `fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[90vh] h-[80vh] w-[80vw] bg-[#ededed]`;
+  const liActiveStyle = `fixed left-0 max-h-[100vh] min-h-[100vh] h-[100vh] w-[100vw] bg-white my-0 mx-0 top-[56px] border-0`;
+  const divActiveStyle = `h-[95%]`;
+  const textAreaActiveStyle = `min-h-[70%]`;
+  const inputActiveStyle = `text-xl font-semibold`;
 
   return (
     <div className={`${isMemoArea || "hidden"}`}>
+      <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent mb-6">
+        メモ
+      </p>
+
       <div className="text-center">
-        <button
-          className="text-lg border border-solid bg-accent border-main w-[50px] h-[50px]"
-          onClick={addMemo}
-        >
+        <button className="text-2xl font-bold" onClick={addMemo}>
           ＋
         </button>
       </div>
       <ul className="md:flex flex-wrap">
         {memoList.map((memo: any, index) => (
           <li
-            className={`border max-h-400px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
-              activeItem === index ? `${activeStyle} is-active` : ""
+            className={`border max-h-[150px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
+              activeItem === index ? `${liActiveStyle} is-active` : ""
             }`}
             key={memo.id}
           >
             {activeItem === index ? (
-              <button className="" onClick={changeResetMemo}>
-                閉じる
-              </button>
-            ) : (
-              <button
-                className="block w-[100%] border py-2"
-                onClick={() => changeActiveMemo(index)}
-              >
-                開く
-              </button>
-            )}
-            <div className="p-5" onClick={() => changeActiveMemo(index)}>
-              <input
-                type="text"
-                className="text-md block w-[100%] p-2 mt-4"
-                defaultValue={memo.memoTitle}
-                onBlur={(e) => editMemoTitle(e.target.value, memo.id)}
-              />
-              <textarea
-                className="text-sm block w-[100%] p-2 mt-4 h-60"
-                defaultValue={memo.memoContent}
-                onBlur={(e) => editMemoContent(e.target.value, memo.id)}
-              />
-            </div>
-
-            {activeItem === index ? (
-              ""
-            ) : (
-              <div className="text-right mt-4">
+              <div className="flex justify-between p-4 w-[100%] fixed top-0 bg-white">
+                <button
+                  className="text-2xl font-bold"
+                  onClick={changeResetMemo}
+                >
+                  ←
+                </button>
                 <button className="text-sm" onClick={() => deleteMemo(memo.id)}>
-                  削除する
+                  削除
                 </button>
               </div>
+            ) : (
+              ""
             )}
+            <div
+              className={`p-2 ${
+                activeItem === index ? `${divActiveStyle}` : ""
+              }`}
+              onClick={() => changeActiveMemo(index)}
+            >
+              <input
+                type="text"
+                className={`text-md block w-[100%] p-2 focus:outline-none ${
+                  activeItem === index ? `${inputActiveStyle}` : ""
+                }`}
+                defaultValue={memo.memoTitle}
+                onBlur={(e) => editMemoTitle(e.target.value, memo.id)}
+                placeholder="タイトル"
+              />
+              <textarea
+                className={`text-sm block w-[100%] p-2 focus:outline-none ${
+                  activeItem === index ? `${textAreaActiveStyle}` : ""
+                }`}
+                defaultValue={memo.memoContent}
+                onBlur={(e) => editMemoContent(e.target.value, memo.id)}
+                placeholder="メモ"
+              />
+            </div>
           </li>
         ))}
       </ul>
