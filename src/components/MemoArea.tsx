@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type TodoAreaType = {
   currentUser: any;
@@ -130,10 +131,10 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     setActiveItem(null);
   };
 
-  const liActiveStyle = `fixed left-0 max-h-[100vh] min-h-[100vh] h-[100vh] w-[100vw] bg-white my-0 mx-0 top-[56px] border-0`;
+  const liActiveStyle = `fixed left-0 max-h-[100vh] min-h-[100vh] h-[100vh] w-[100vw] bg-white my-0 mx-0 top-[48px] border-0`;
   const divActiveStyle = `h-[95%]`;
-  const textAreaActiveStyle = `min-h-[70%]`;
   const inputActiveStyle = `text-xl font-semibold`;
+  const textAreaActiveStyle = `min-h-[70%] text-base`;
 
   return (
     <div className={`${isMemoArea || "hidden"}`}>
@@ -155,7 +156,7 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
             key={memo.id}
           >
             {activeItem === index ? (
-              <div className="flex justify-between p-4 w-[100%] fixed top-0 bg-white">
+              <div className="flex justify-between px-4 pt-4 w-[100%] fixed top-0 bg-white">
                 <button
                   className="text-2xl font-bold"
                   onClick={changeResetMemo}
@@ -163,7 +164,7 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
                   ←
                 </button>
                 <button className="text-sm" onClick={() => deleteMemo(memo.id)}>
-                  削除
+                  <DeleteIcon />
                 </button>
               </div>
             ) : (

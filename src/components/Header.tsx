@@ -5,6 +5,9 @@ import { useRouter } from "next/router";
 import { getAuth, signOut } from "firebase/auth";
 import { app, auth } from "../../lib/firebase";
 import { useAuthContext } from "@/context/AuthContext";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
 
 type HeaderType = {
   pageTitle?: string;
@@ -22,8 +25,11 @@ const Header = ({
   const router = useRouter();
 
   const handleLogout = async () => {
+    //確認用のアラート
+    const isConfirm = confirm("ログアウトしますか？");
+    if (!isConfirm) return;
+
     await signOut(auth);
-    alert("ログアウトしました");
     router.push("/login");
   };
 
@@ -34,14 +40,14 @@ const Header = ({
       </Head>
 
       <header className="border-b-2">
-        <div className="flex justify-between px-8 max-w-7xl h-16">
-          <h1 className="flex justify-center flex-col text-xl">TODO&メモ</h1>
-          <button onClick={showChange}>
-            {isTodoArea ? "メモに切り替え" : "Todoへ切り替え"}
+        <div className="flex justify-between px-4 max-w-7xl h-16">
+          <button onClick={showChange} className="text-md">
+            {isTodoArea ? <PlaylistAddCheckIcon /> : <NoteAltIcon />}
           </button>
+          <h1 className="flex justify-center flex-col text-md">Todo&メモ</h1>
           {currentUser && (
             <button className="text-sm" onClick={handleLogout}>
-              ログアウト
+              <LogoutIcon />
             </button>
           )}
         </div>

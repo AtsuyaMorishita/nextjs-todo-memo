@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { auth, db, provider } from "../../lib/firebase";
+import GoogleIcon from "@mui/icons-material/Google";
 
 export default function Login() {
   const router = useRouter();
@@ -72,7 +73,8 @@ export default function Login() {
             onClick={onGoogleLogin}
             className="border-[3px] border-[#333] w-[100%] rounded-md h-[50px]"
           >
-            Googleアカウントでログイン
+            <GoogleIcon />
+            Googleで続行
           </button>
         </div>
         <p className="py-3 text-lg">or</p>
