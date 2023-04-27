@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import LeadArea from "@/components/LeadArea";
 import MainAreaWrap from "@/components/MainAreaWrap";
 import MemoArea from "@/components/MemoArea";
+import { Meta } from "@/components/Meta";
 import TodoArea from "@/components/TodoArea";
 import UserGuard from "@/components/UserGuard";
 import { useAuthContext } from "@/context/AuthContext";
@@ -16,15 +17,15 @@ export default function Home() {
   const [isTodoArea, setIsTodoArea] = useState(true);
   const [isMemoArea, setIsMemoArea] = useState(false);
 
-  const showTodo = () => {
-    setIsTodoArea(true);
-    setIsMemoArea(false);
-  };
+  // const showTodo = () => {
+  //   setIsTodoArea(true);
+  //   setIsMemoArea(false);
+  // };
 
-  const showMemo = () => {
-    setIsTodoArea(false);
-    setIsMemoArea(true);
-  };
+  // const showMemo = () => {
+  //   setIsTodoArea(false);
+  //   setIsMemoArea(true);
+  // };
 
   const showChange = () => {
     setIsTodoArea(!isTodoArea);
@@ -42,6 +43,8 @@ export default function Home() {
 
   return (
     <>
+      <Meta />
+
       {currentUser && (
         <div>
           <Header
