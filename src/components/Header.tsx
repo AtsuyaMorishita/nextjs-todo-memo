@@ -39,14 +39,14 @@ const Header = ({
         <title>{pageTitle} | TODO&メモ</title>
       </Head>
 
-      <header className="border-b-2">
+      <header className="border-b-[1px] border-[#00488e]">
         <div className="flex justify-between px-4 max-w-7xl h-16">
-          <button onClick={showChange} className="text-md">
+          <button onClick={showChange} className="text-md focus:outline-none">
             {isTodoArea ? <PlaylistAddCheckIcon /> : <NoteAltIcon />}
           </button>
-          <h1 className="flex justify-center flex-col text-md">Todo&メモ</h1>
+          <h1 className="flex justify-center flex-col text-lg font-bold">TODO MEMO</h1>
           {currentUser && (
-            <button className="text-sm" onClick={handleLogout}>
+            <button className="text-sm focus:outline-none" onClick={handleLogout}>
               <LogoutIcon />
             </button>
           )}

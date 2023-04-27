@@ -74,7 +74,7 @@ export default function Login() {
             className="border-[3px] border-[#333] w-[100%] rounded-md h-[50px]"
           >
             <GoogleIcon />
-            Googleで続行
+            <span className="inline-block ml-1">Googleで続行</span>
           </button>
         </div>
         <p className="py-3 text-lg">or</p>
@@ -102,7 +102,7 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="border-[3px] border-[#333] w-[100%] rounded-md mt-8 h-[50px]"
+            className="w-[100%] rounded-md mt-8 h-[50px] bg-[#00488e] text-white font-bold"
           >
             ログイン
           </button>

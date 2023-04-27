@@ -131,15 +131,19 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     setActiveItem(null);
   };
 
-  const liActiveStyle = `fixed left-0 max-h-[100vh] min-h-[100vh] h-[100vh] w-[100vw] bg-white my-0 mx-0 top-[48px] border-0`;
+  const liActiveStyle = `fixed left-0 max-h-[100vh] min-h-[100vh] h-[100vh] w-[100vw] bg-white my-0 mx-0 top-[48px] border-0 rounded-none mt-0 mb-0 ml-0 mr-0 md:w-[100%]`;
   const divActiveStyle = `h-[95%]`;
   const inputActiveStyle = `text-xl font-semibold`;
   const textAreaActiveStyle = `min-h-[70%] text-base`;
 
   return (
-    <div className={`${isMemoArea || "hidden"}`}>
-      <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent mb-6">
-        メモ
+    <div
+      className={`${
+        isMemoArea || "hidden"
+      } bg-white px-4 md:px-20 py-10 md:py-20 rounded-2xl`}
+    >
+      <p className="text-xl md:text-2xl font-bold inline-block border-b-4 border-solid border-[#00488e] mb-6">
+        MEMO
       </p>
 
       <div className="text-center">
@@ -150,7 +154,7 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
       <ul className="md:flex flex-wrap">
         {memoList.map((memo: any, index) => (
           <li
-            className={`border max-h-[150px] overflow-y-scroll my-2 mx-[5px] md:w-[calc(50%-10px)] ${
+            className={`border border-[#00488e] rounded-md max-h-[150px] overflow-y-scroll my-4 mx-[5px] md:w-[calc(50%-10px)] ${
               activeItem === index ? `${liActiveStyle} is-active` : ""
             }`}
             key={memo.id}

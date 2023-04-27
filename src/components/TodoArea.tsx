@@ -175,11 +175,15 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   };
 
   return (
-    <div className={`${isTodoArea || "hidden"} max-w-lg mx-auto`}>
+    <div
+      className={`${
+        isTodoArea || "hidden"
+      } mx-auto bg-white px-4 py-10 md:py-20 rounded-2xl`}
+    >
       {/* 残タスク */}
-      <div className="">
-        <p className="text-2xl font-bold inline-block border-b-4 border-solid border-accent mb-6">
-          Todo
+      <div className="max-w-lg mx-auto">
+        <p className="text-xl md:text-2xl font-bold inline-block border-b-4 border-solid border-[#00488e] mb-6">
+          TODO
         </p>
 
         <div className="text-center flex items-center">
@@ -222,7 +226,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       </div>
 
       {/* 完了タスク */}
-      <div className="mt-10">
+      <div className="mt-10 max-w-lg mx-auto">
         <p className="text-md font-bold block text-center">
           チェック済みタスク
         </p>
