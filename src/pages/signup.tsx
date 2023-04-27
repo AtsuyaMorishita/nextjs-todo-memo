@@ -64,7 +64,7 @@ export default function Signup() {
             <div>
               <button
                 type="submit"
-                className="border-[3px] border-[#333] w-[100%] rounded-md mt-8 h-[50px]"
+                className="w-[100%] rounded-md mt-8 h-[50px] bg-[#00488e] text-white font-bold"
               >
                 サインアップ
               </button>

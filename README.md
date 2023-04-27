@@ -27,9 +27,9 @@
 - Todo の UI 構築 → OK
 - メモの UI 構築 → OK
 - ボタン類は materialIcon を使う → OK
+- ヘッダーの UI 構築 → OK
+- pc や tab 含め最終 UI 調整 → OK
 
-- ヘッダーの UI 構築
-- pc や tab 含め最終 UI 調整
 - メタ情報・OGP の設定
 - PWA の設定
 
