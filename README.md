@@ -1,40 +1,125 @@
-# Todo
+# Next.js×Firebase で TODO メモ アプリ制作
 
-- タスクを DB に保存して残タスクに表示する → OK
-- タスクの完了状態を true にして完了タスクに移動させる → OK
-- 完了タスクのチェックを外したら、残タスクに戻す → OK
-- 完了状態が true の完了タスクを全て削除する → OK
-- タブ切り替えでメモコンポーネントを表示させる → OK
-- メモ項目自体を DB に追加する処理 → OK
-- メモタイトルとメモコンテンツを DB に保存する → OK
-- メモ項目をループさせ、クリックした要素を fixed 状態にする → OK
-- fixed 状態を解除する → OK
-- メモ項目自体を DB から削除する → OK
-- vercel へデプロイ → OK
-- Todo・メモともに追加処理を上から順番に並ぶようにする → OK
-- メモのパフォーマンス改善 → OK
-- メモの削除で UI が変化しないバグ → OK
-- タスクが空の時は追加できないようにする → OK
-- Todo の残タスクのチェックボックスバグ対処 → OK
-- api のディレクトリ整理 → OK
-- google アカウントの認証追加 → OK
-- ログイン・会員登録の UI 構築 → OK
-- 未ログイン状態でトップに入れないようにリダイレクトをかける → OK
-- ログアウトしたときは一瞬で変わるようにする → OK
-- メモが途中までしか DB に保存されていない → OK
-- ログインに時間がかかるため、Todo 表示前に別の UI を挟む → OK
-- リードエリアの UI 構築 → OK
-- Todo の UI 構築 → OK
-- メモの UI 構築 → OK
-- ボタン類は materialIcon を使う → OK
-- ヘッダーの UI 構築 → OK
-- pc や tab 含め最終 UI 調整 → OK
+## アーキテクチャ図
 
-- メタ情報・OGP の設定
-- PWA の設定
+## 機能
 
-【後で対応する】
+- 新規会員登録(Firebase Authentication)
+- ログイン、ログアウト(Firebase Authentication)
+- Todo の追加、チェックを入れる、チェックを外す、削除(Cloud Firestore)
+- メモの追加、テキストの編集、削除(Cloud Firestore)
+- PWA 対応
 
+## Cloud Firestore DB
+
+### 共通(todo・memo の 各 collection 以降はそれぞれ分かれる)
+
+<table>
+<tr align="center">
+  <th>データモデル</th>
+  <th>データ名</th>
+  <th>タイプ</th>
+</tr>
+<tr>
+<tr align="center">
+  <th>collection</th>
+  <td>user</td>
+  <td>-</td>
+</tr>
+<tr align="center">
+  <th>document</th>
+  <td>自動ID</td>
+  <td>-</td>
+</tr>
+<tr align="center">
+  <th rowspan="2">collection</th>
+  <td>todo</td>
+  <td>-</td>
+</tr>
+<tr align="center">
+  <td>memo</td>
+  <td>-</td>
+</tr>
+</table>
+
+### 「todo」の collection 以降
+
+<table>
+<tr align="center">
+  <th>document</th>
+  <td>自動ID</td>
+  <td>-</td>
+</tr>
+<tr>
+  <tr align="center">
+  <th rowspan="5">data</th>
+  <td>id</td>
+  <td>string</td>
+</tr>
+<tr align="center">
+  <td>timestamp</td>
+  <td>timestamp</td>
+</tr>
+<tr  align="center">
+  <td>todo</td>
+  <td>string</td>
+</tr>
+<tr  align="center">
+  <td>isChecked</td>
+  <td>boolean</td>
+</tr>
+<tr  align="center">
+  <td>isComplete</td>
+  <td>boolean</td>
+</tr>
+</table>
+
+### 「memo」の collection 以降
+
+<table>
+<tr align="center">
+  <th>document</th>
+  <td>自動ID</td>
+  <td>-</td>
+</tr>
+
+<tr>
+  <tr align="center">
+  <th rowspan="4">data</th>
+  <td>id</td>
+  <td>string</td>
+</tr>
+<tr align="center">
+  <td>timestamp</td>
+  <td>timestamp</td>
+</tr>
+<tr  align="center">
+  <td>memoTitle</td>
+  <td>string</td>
+</tr>
+<tr  align="center">
+  <td>memoContent</td>
+  <td>string</td>
+</tr>
+</table>
+
+## やりたい事・修正点
+
+- pc 含め UI の最終調整
+- パスワード制限 4 文字以上を入れる
+- パスワード忘れた人用の機能
+- ローディング中は gif ローディングを入れる
+- タスク入力箇所の範囲が少し狭い
+- チェック済みタスクの削除が遅い
+- アカウント削除の処理
+- ゲスト用のログインを用意する
 - ログイン時のタイムラグ
-- マイページを作成
 - DB 保存のタイミングをさらに改善
+
+## 開発者
+
+[モリアツ](https://github.com/AtsuyaMorishita)
+
+## 公開 URL
+
+https://nextjs-todo-memo.vercel.app/
