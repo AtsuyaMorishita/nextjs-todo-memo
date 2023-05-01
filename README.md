@@ -12,7 +12,7 @@
 
 ## Cloud Firestore DB
 
-### 共通  
+### 共通
 
 <table>
 <tr align="center">
@@ -118,7 +118,7 @@
 
 ## 開発者
 
-[モリアツ](https://github.com/AtsuyaMorishita)
+[Atsuya](https://github.com/AtsuyaMorishita)
 
 ## 公開 URL
 
