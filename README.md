@@ -12,7 +12,7 @@
 
 ## Cloud Firestore DB
 
-### 共通(todo・memo の 各 collection 以降はそれぞれ分かれる)
+### 共通  
 
 <table>
 <tr align="center">
