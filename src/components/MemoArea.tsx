@@ -123,7 +123,6 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
    * クリックしたメモをアクティブ状態にする
    */
   const changeActiveMemo = (index: any) => {
-    console.log("メモを開く！");
     setActiveItem(index);
   };
 

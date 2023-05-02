@@ -1,5 +1,3 @@
-import { Memory, TodayOutlined } from "@mui/icons-material";
-import Link from "next/link";
 import { ReactNode } from "react";
 import Layout from "./Layout";
 

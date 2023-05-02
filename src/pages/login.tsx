@@ -1,8 +1,6 @@
-import { async } from "@firebase/util";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  signInWithPopup,
   signInWithRedirect,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -46,21 +44,16 @@ export default function Login() {
           alert("ログインに失敗しました");
         });
     } catch {
-      alert("何かしらのログインエラーが起きました");
+      alert("ログインエラーが起きました");
     }
   };
 
   /**
    * Googleアカウントのログイン
    */
-  // const [user, loading, error] = useAuthState(auth);
   const onGoogleLogin = async (e: any) => {
     e.preventDefault();
-
     await signInWithRedirect(auth, provider);
-    // await signInWithPopup(auth, provider).catch((error) =>
-    //   alert(error.message)
-    // );
     router.push("/");
   };
 

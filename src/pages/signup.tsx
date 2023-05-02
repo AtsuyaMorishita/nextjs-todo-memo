@@ -20,7 +20,6 @@ export default function Signup() {
       await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log(user);
           alert("会員登録ができました！");
           router.push("/");
         })
@@ -28,7 +27,7 @@ export default function Signup() {
           console.log(error);
         });
     } catch (error) {
-      alert("会員登録に失敗しました。。");
+      alert("会員登録に失敗しました。");
     }
   };
 

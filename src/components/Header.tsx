@@ -1,23 +1,17 @@
-import Head from "next/head";
-import Link from "next/link";
-import { Logout } from "@mui/icons-material";
 import { useRouter } from "next/router";
-import { getAuth, signOut } from "firebase/auth";
-import { app, auth } from "../../lib/firebase";
-import { useAuthContext } from "@/context/AuthContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../../lib/firebase";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 
 type HeaderType = {
-  pageTitle?: string;
   currentUser: any;
   showChange: () => void;
   isTodoArea: boolean;
 };
 
 const Header = ({
-  pageTitle,
   currentUser,
   showChange,
   isTodoArea,

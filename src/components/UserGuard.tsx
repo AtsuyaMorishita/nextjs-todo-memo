@@ -1,4 +1,3 @@
-import { useAuthContext } from "@/context/AuthContext";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
@@ -9,7 +8,6 @@ type UserGuardType = {
 };
 
 const UserGuard = ({ children }: UserGuardType) => {
-  const { currentUser } = useAuthContext();
   const router = useRouter();
 
   // 未ログインであればリダイレクト

@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }: AuthType) => {
 
   useEffect(() => {
     return auth.onAuthStateChanged((user) => {
-      console.log("ログイン状態が変化した！", user);
       setCurrentUser(user);
       setLoading(false);
     });

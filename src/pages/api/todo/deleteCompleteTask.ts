@@ -1,13 +1,9 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import {
   collection,
   deleteDoc,
-  deleteField,
   doc,
   getDocs,
   query,
-  setDoc,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
