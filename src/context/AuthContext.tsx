@@ -7,6 +7,7 @@ import {
   ReactNode,
 } from "react";
 import { auth } from "../../lib/firebase";
+import { CircularProgress } from "@mui/material";
 
 type AuthContextProps = {
   currentUser: User | null | undefined;
@@ -37,7 +38,13 @@ export const AuthProvider = ({ children }: AuthType) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? <p className="text-center">ローディング中...</p> : children}
+      {loading ? (
+        <div className="w-[100%] h-[100vh] flex items-center justify-center">
+          <CircularProgress />
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

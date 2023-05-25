@@ -2,6 +2,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
 import { auth } from "../../lib/firebase";
+import { CircularProgress } from "@mui/material";
 
 type UserGuardType = {
   children: ReactNode;
@@ -15,7 +16,7 @@ const UserGuard = ({ children }: UserGuardType) => {
     if (!user) {
       router.push("/login");
     } else {
-      <p>ローディング中</p>;
+      <CircularProgress />;
     }
   });
 

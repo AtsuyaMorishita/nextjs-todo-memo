@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { CircularProgress } from "@mui/material";
 
 type TodoAreaType = {
   currentUser: any;
@@ -17,9 +18,11 @@ type memoDataType = {
 const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
   const [memoList, setMemoList] = useState<memoDataType[]>([]);
   const [activeItem, setActiveItem] = useState(null);
+  const [isLoad, setIsLoad] = useState(true); //タスクの読み込み状態を管理
 
   useEffect(() => {
     getMemo();
+    setIsLoad(false);
   }, []);
 
   /**
@@ -45,7 +48,6 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
       memoContent: "",
       timestamp: dateStr,
     };
-    setMemoList([memoData, ...memoList]);
 
     try {
       //メモデータをDBに保存する
@@ -53,6 +55,8 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
         currentUserId: currentUser.uid,
         memoData,
       });
+
+      setMemoList([memoData, ...memoList]);
     } catch (error) {
       console.log(error);
     }
@@ -66,12 +70,6 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
     const isConfirm = confirm("メモが削除されますが、よろしいでしょうか？");
     if (!isConfirm) return;
 
-    //メモをstateから削除する
-    const memoArray = memoList.filter((elem) => {
-      return elem.id !== elemId;
-    });
-    setMemoList(memoArray);
-
     try {
       //メモをDBから削除する
       const reqData = {
@@ -82,6 +80,12 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
       await axios.delete("/api/memo/deleteMemo", {
         params: reqData,
       });
+
+      //メモをstateから削除する
+      const memoArray = memoList.filter((elem) => {
+        return elem.id !== elemId;
+      });
+      setMemoList(memoArray);
     } catch (error) {
       console.log(error);
     }
@@ -131,9 +135,10 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
   };
 
   const liActiveStyle = `fixed left-0 max-h-[100vh] min-h-[100vh] h-[100vh] w-[100vw] bg-white my-0 mx-0 top-[48px] border-0 rounded-none mt-0 mb-0 ml-0 mr-0 md:w-[100%]`;
+  const liNormalStyle = `cursor-pointer border border-[#00488e] rounded-md max-h-[150px] overflow-y-scroll my-4 mx-[5px] md:w-[calc(50%-10px)]`;
   const divActiveStyle = `h-[95%]`;
-  const inputActiveStyle = `text-xl font-semibold`;
-  const textAreaActiveStyle = `min-h-[70%] text-base`;
+  const inputActiveStyle = `text-xl font-semibold cursor-auto`;
+  const textAreaActiveStyle = `min-h-[70%] text-base cursor-auto`;
 
   return (
     <div
@@ -150,56 +155,67 @@ const MemoArea = ({ isMemoArea, currentUser }: TodoAreaType) => {
           ＋
         </button>
       </div>
-      <ul className="md:flex flex-wrap">
-        {memoList.map((memo: any, index) => (
-          <li
-            className={`border border-[#00488e] rounded-md max-h-[150px] overflow-y-scroll my-4 mx-[5px] md:w-[calc(50%-10px)] ${
-              activeItem === index ? `${liActiveStyle} is-active` : ""
-            }`}
-            key={memo.id}
-          >
-            {activeItem === index ? (
-              <div className="flex justify-between px-4 pt-4 w-[100%] fixed top-0 bg-white">
-                <button
-                  className="text-2xl font-bold"
-                  onClick={changeResetMemo}
-                >
-                  ←
-                </button>
-                <button className="text-sm" onClick={() => deleteMemo(memo.id)}>
-                  <DeleteIcon />
-                </button>
-              </div>
-            ) : (
-              ""
-            )}
-            <div
-              className={`p-2 ${
-                activeItem === index ? `${divActiveStyle}` : ""
+      {!isLoad ? (
+        <ul className="md:flex flex-wrap">
+          {memoList.map((memo: any, index) => (
+            <li
+              className={`${
+                activeItem === index
+                  ? `${liActiveStyle} is-active`
+                  : liNormalStyle
               }`}
-              onClick={() => changeActiveMemo(index)}
+              key={memo.id}
             >
-              <input
-                type="text"
-                className={`text-md block w-[100%] p-2 focus:outline-none ${
-                  activeItem === index ? `${inputActiveStyle}` : ""
+              {activeItem === index ? (
+                <div className="flex justify-between px-4 pt-4 w-[100%] fixed top-0 bg-white">
+                  <button
+                    className="text-2xl font-bold"
+                    onClick={changeResetMemo}
+                  >
+                    ←
+                  </button>
+                  <button
+                    className="text-sm"
+                    onClick={() => deleteMemo(memo.id)}
+                  >
+                    <DeleteIcon />
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
+              <div
+                className={`p-2 ${
+                  activeItem === index ? `${divActiveStyle}` : ""
                 }`}
-                defaultValue={memo.memoTitle}
-                onBlur={(e) => editMemoTitle(e.target.value, memo.id)}
-                placeholder="タイトル"
-              />
-              <textarea
-                className={`text-sm block w-[100%] p-2 focus:outline-none ${
-                  activeItem === index ? `${textAreaActiveStyle}` : ""
-                }`}
-                defaultValue={memo.memoContent}
-                onBlur={(e) => editMemoContent(e.target.value, memo.id)}
-                placeholder="メモ"
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
+                onClick={() => changeActiveMemo(index)}
+              >
+                <input
+                  type="text"
+                  className={`cursor-pointer text-md block w-[100%] p-2 focus:outline-none ${
+                    activeItem === index ? `${inputActiveStyle}` : ""
+                  }`}
+                  defaultValue={memo.memoTitle}
+                  onChange={(e) => editMemoTitle(e.target.value, memo.id)}
+                  placeholder="タイトル"
+                />
+                <textarea
+                  className={`cursor-pointer text-sm block w-[100%] p-2 focus:outline-none ${
+                    activeItem === index ? `${textAreaActiveStyle}` : ""
+                  }`}
+                  defaultValue={memo.memoContent}
+                  onChange={(e) => editMemoContent(e.target.value, memo.id)}
+                  placeholder="メモ"
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="text-center mt-5">
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 };

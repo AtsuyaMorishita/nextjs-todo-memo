@@ -1,3 +1,4 @@
+import { CircularProgress, dialogClasses } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -20,10 +21,13 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [remainingTasks, setRemainingTasks] = useState<resDataType[]>([]); //残タスクを管理
   const [completeTasks, setCompleteTasks] = useState<resDataType[]>([]); //完了タスクを管理
   const [isLoad, setIsLoad] = useState(true); //タスクの読み込み状態を管理
+  const [isFinishLoad, setIsFinishLoad] = useState(true); //タスクの読み込み状態を管理
 
   useEffect(() => {
+    console.log("Effectの発火");
     getTask();
-    return () => setIsLoad(true);
+    setIsLoad(true);
+    setIsFinishLoad(true);
   }, []);
 
   /**
@@ -48,6 +52,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
     setCompleteTasks(resCompleteTasks);
 
     setIsLoad(false);
+    setIsFinishLoad(false);
   };
 
   /**
@@ -71,7 +76,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       timestamp: dateStr,
       isChecked: false,
     };
-    setRemainingTasks([todoData, ...remainingTasks]);
+    // setRemainingTasks([todoData, ...remainingTasks]);
 
     try {
       //todoをDBに追加する
@@ -79,6 +84,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
         currentUserId: currentUser.uid,
         todoData,
       });
+
+      setRemainingTasks([todoData, ...remainingTasks]);
     } catch (err) {
       console.log(err);
     }
@@ -90,6 +97,12 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const handleRemained = async (inputElement: any) => {
     try {
       const checkTaskId = await inputElement.target.id;
+
+      //タスクの状態をDBに保存
+      await axios.put("/api/todo/finishTask", {
+        currentUserId: currentUser.uid,
+        checkTaskId,
+      });
 
       //残タスクのstateを更新
       const remainObj = remainingTasks.filter((elem: any) => {
@@ -103,12 +116,6 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       });
       finishObj[0].isChecked = true;
       setCompleteTasks([finishObj[0], ...completeTasks]);
-
-      //タスクの状態をDBに保存
-      await axios.put("/api/todo/finishTask", {
-        currentUserId: currentUser.uid,
-        checkTaskId,
-      });
     } catch (err) {
       console.log(err);
     }
@@ -120,6 +127,12 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const handleCompleted = async (inputElement: any) => {
     try {
       const checkTaskId = await inputElement.target.id;
+
+      //タスクの状態をDBに保存
+      await axios.put("/api/todo/returnTask", {
+        currentUserId: currentUser.uid,
+        checkTaskId,
+      });
 
       //完了タスクのstateを更新
       const changeFinishObj = completeTasks.filter((elem: any) => {
@@ -133,12 +146,6 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       });
       changeRemainObj[0].isChecked = false;
       setRemainingTasks([changeRemainObj[0], ...remainingTasks]);
-
-      //タスクの状態をDBに保存
-      await axios.put("/api/todo/returnTask", {
-        currentUserId: currentUser.uid,
-        checkTaskId,
-      });
     } catch (err) {
       console.log(err);
     }
@@ -155,8 +162,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       );
       if (!isConfirm) return;
 
-      //完了タスクのstateを空にする
-      setCompleteTasks([]);
+      setIsFinishLoad(true);
 
       //DBの全ての完了タスクを削除する
       const reqData = {
@@ -165,6 +171,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       await axios.delete("/api/todo/deleteCompleteTask", {
         params: reqData,
       });
+
+      setCompleteTasks([]);
+      setIsFinishLoad(false);
     } catch (err) {
       console.log(err);
     }
@@ -217,7 +226,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
             ))}
           </ul>
         ) : (
-          <p>読み込み中・・・</p>
+          <div className="text-center mt-5">
+            <CircularProgress />
+          </div>
         )}
       </div>
 
@@ -226,7 +237,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
         <p className="text-md font-bold block text-center">
           チェック済みタスク
         </p>
-        {!isLoad ? (
+        {!isFinishLoad ? (
           <ul className="mt-6">
             {completeTasks.map((task: any, index) => (
               <li className="my-3" key={index}>
@@ -247,7 +258,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
             ))}
           </ul>
         ) : (
-          <p>読み込み中・・・</p>
+          <div className="text-center mt-5">
+            <CircularProgress />
+          </div>
         )}
 
         {completeTasks.length ? (
