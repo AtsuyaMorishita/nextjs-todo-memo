@@ -11,11 +11,7 @@ type HeaderType = {
   isTodoArea: boolean;
 };
 
-const Header = ({
-  currentUser,
-  showChange,
-  isTodoArea,
-}: HeaderType) => {
+const Header = ({ currentUser, showChange, isTodoArea }: HeaderType) => {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -30,11 +26,14 @@ const Header = ({
   return (
     <div>
       <header className="border-b-[1px] border-[#00488e]">
-        <div className="flex justify-between px-4 max-w-7xl h-16">
+        <div className="flex justify-between px-4 max-w-7xl h-16 m-auto">
           <button onClick={showChange} className="text-md focus:outline-none">
             {isTodoArea ? <PlaylistAddCheckIcon /> : <NoteAltIcon />}
           </button>
-          <h1 className="flex justify-center flex-col text-lg font-bold">
+          <h1
+            className="flex justify-center flex-col text-lg font-bold cursor-pointer select-none"
+            onClick={showChange}
+          >
             TODO MEMO
           </h1>
           {currentUser && (
