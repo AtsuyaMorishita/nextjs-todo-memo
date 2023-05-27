@@ -4,23 +4,27 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Meta } from "@/components/Meta";
+import { LinearProgress } from "@mui/material";
 
 export default function Signup() {
   const auth = getAuth(app);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const [isAllLoad, setIsAllLoad] = useState(false); //上部読み込みバーの状態
 
   /**
    * ユーザー会員登録
    */
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsAllLoad(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           alert("会員登録ができました！");
+          setIsAllLoad(false);
           router.push("/");
         })
         .catch((error) => {
@@ -34,6 +38,12 @@ export default function Signup() {
   return (
     <>
       <Meta title="会員登録" />
+
+      {isAllLoad && (
+        <div className="fixed top-0 left-0 w-[100%]">
+          <LinearProgress className="h-[7px] b-radius" />
+        </div>
+      )}
 
       <div className="w-[100vw] h-[100vh] flex items-center justify-center px-8 md:px-0">
         <div className="text-center w-[350px] max-[100%]">

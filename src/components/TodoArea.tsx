@@ -1,4 +1,4 @@
-import { CircularProgress, dialogClasses } from "@mui/material";
+import { CircularProgress, LinearProgress, dialogClasses } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -20,20 +20,21 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [inputText, setInputText] = useState(""); //タスクをテキストを管理
   const [remainingTasks, setRemainingTasks] = useState<resDataType[]>([]); //残タスクを管理
   const [completeTasks, setCompleteTasks] = useState<resDataType[]>([]); //完了タスクを管理
-  const [isLoad, setIsLoad] = useState(true); //タスクの読み込み状態を管理
-  const [isFinishLoad, setIsFinishLoad] = useState(true); //タスクの読み込み状態を管理
+  const [isLoad, setIsLoad] = useState(false); //タスクの読み込み状態を管理
+  const [isFinishLoad, setIsFinishLoad] = useState(false); //タスクの読み込み状態を管理
+  const [isAllLoad, setIsAllLoad] = useState(false); //上部読み込みバーの状態
 
   useEffect(() => {
-    console.log("Effectの発火");
     getTask();
-    setIsLoad(true);
-    setIsFinishLoad(true);
   }, []);
 
   /**
    * 全てのタスクを取得する
    */
   const getTask = async () => {
+    setIsLoad(true);
+    setIsFinishLoad(true);
+
     //全てのtodoを取得
     const resData = await axios.post("/api/todo/getTask", {
       currentUserId: currentUser.uid,
@@ -63,8 +64,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       alert("タスクを入力してください。");
       return;
     }
-
-    setInputText("");
+    setIsAllLoad(true);
 
     //todoをstateに追加する
     const getKey = () => Math.random().toString(32).substring(2);
@@ -76,7 +76,6 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       timestamp: dateStr,
       isChecked: false,
     };
-    // setRemainingTasks([todoData, ...remainingTasks]);
 
     try {
       //todoをDBに追加する
@@ -85,7 +84,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
         todoData,
       });
 
+      setInputText("");
       setRemainingTasks([todoData, ...remainingTasks]);
+      setIsAllLoad(false);
     } catch (err) {
       console.log(err);
     }
@@ -96,6 +97,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    */
   const handleRemained = async (inputElement: any) => {
     try {
+      setIsAllLoad(true);
+
       const checkTaskId = await inputElement.target.id;
 
       //タスクの状態をDBに保存
@@ -116,6 +119,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       });
       finishObj[0].isChecked = true;
       setCompleteTasks([finishObj[0], ...completeTasks]);
+
+      setIsAllLoad(false);
     } catch (err) {
       console.log(err);
     }
@@ -126,6 +131,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    */
   const handleCompleted = async (inputElement: any) => {
     try {
+      setIsAllLoad(true);
+
       const checkTaskId = await inputElement.target.id;
 
       //タスクの状態をDBに保存
@@ -146,6 +153,8 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       });
       changeRemainObj[0].isChecked = false;
       setRemainingTasks([changeRemainObj[0], ...remainingTasks]);
+
+      setIsAllLoad(false);
     } catch (err) {
       console.log(err);
     }
@@ -162,6 +171,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       );
       if (!isConfirm) return;
 
+      setIsAllLoad(true);
       setIsFinishLoad(true);
 
       //DBの全ての完了タスクを削除する
@@ -173,6 +183,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
       });
 
       setCompleteTasks([]);
+      setIsAllLoad(false);
       setIsFinishLoad(false);
     } catch (err) {
       console.log(err);
@@ -180,103 +191,111 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   };
 
   return (
-    <div
-      className={`${
-        isTodoArea || "hidden"
-      } mx-auto bg-white px-4 py-10 md:py-20 rounded-2xl`}
-    >
-      {/* 残タスク */}
-      <div className="max-w-lg mx-auto">
-        <p className="text-xl md:text-2xl font-bold inline-block border-b-4 border-solid border-[#00488e] mb-6">
-          TODO
-        </p>
+    <>
+      {isAllLoad && (
+        <div className="fixed top-0 left-0 w-[100%]">
+          <LinearProgress className="h-[7px] b-radius" />
+        </div>
+      )}
 
-        <div className="text-center flex items-center">
-          <button className="text-2xl font-bold" onClick={() => addTask()}>
-            ＋
-          </button>
-          <input
-            type="text"
-            className="border-main bg-transparent focus:outline-none ml-4"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="タスクを入力"
-          />
+      <div
+        className={`${
+          isTodoArea || "hidden"
+        } mx-auto bg-white px-4 py-10 md:py-20 rounded-2xl`}
+      >
+        {/* 残タスク */}
+        <div className="max-w-lg mx-auto">
+          <p className="text-xl md:text-2xl font-bold inline-block border-b-4 border-solid border-[#00488e] mb-6">
+            TODO
+          </p>
+          <div className="text-center flex items-center">
+            <button
+              className="text-2xl font-bold outline-none"
+              onClick={() => addTask()}
+            >
+              ＋
+            </button>
+            <input
+              type="text"
+              className="border-main bg-transparent focus:outline-none ml-4 w-[90%]"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="タスクを入力"
+            />
+          </div>
+          {!isLoad ? (
+            <ul className="mt-4">
+              {remainingTasks.map((task: any, index) => (
+                <li className="my-4" key={index}>
+                  <label
+                    htmlFor={`${task.id}`}
+                    className="flex items-center cursor-pointer"
+                  >
+                    <input
+                      id={`${task.id}`}
+                      type="checkbox"
+                      className="cursor-pointer w-[25px] h-[25px]"
+                      value={task.todo}
+                      checked={task.isChecked}
+                      onChange={(e) => handleRemained(e)}
+                    />
+                    <p className="ml-4 relative w-[90%]">{task.todo}</p>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-center mt-5">
+              <CircularProgress />
+            </div>
+          )}
         </div>
 
-        {!isLoad ? (
-          <ul className="mt-4">
-            {remainingTasks.map((task: any, index) => (
-              <li className="my-4" key={index}>
-                <label
-                  htmlFor={`${task.id}`}
-                  className="flex items-center cursor-pointer"
-                >
-                  <input
-                    id={`${task.id}`}
-                    type="checkbox"
-                    className="cursor-pointer w-[25px] h-[25px]"
-                    value={task.todo}
-                    checked={task.isChecked}
-                    onChange={(e) => handleRemained(e)}
-                  />
-                  <p className="ml-4 relative w-[90%]">{task.todo}</p>
-                </label>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="text-center mt-5">
-            <CircularProgress />
-          </div>
-        )}
+        {/* 完了タスク */}
+        <div className="mt-10 max-w-lg mx-auto">
+          <p className="text-md font-bold block text-center">
+            チェック済みタスク
+          </p>
+          {!isFinishLoad ? (
+            <ul className="mt-6">
+              {completeTasks.map((task: any, index) => (
+                <li className="my-3" key={index}>
+                  <label
+                    htmlFor={`${task.id}`}
+                    className="flex items-center cursor-pointer opacity-50"
+                  >
+                    <input
+                      id={`${task.id}`}
+                      type="checkbox"
+                      className="cursor-pointer w-[25px] h-[25px]"
+                      checked={task.isChecked}
+                      onChange={(e) => handleCompleted(e)}
+                    />
+                    <p className="ml-4 line-through w-[90%]">{task.todo}</p>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-center mt-5">
+              <CircularProgress />
+            </div>
+          )}
+          {completeTasks.length ? (
+            <div className="text-right">
+              <button
+                className="border border-solid p-3 text-xs bg-main text-white border-white"
+                onClick={() => handleDeleteButton()}
+              >
+                チェック済みを削除
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
       </div>
-
-      {/* 完了タスク */}
-      <div className="mt-10 max-w-lg mx-auto">
-        <p className="text-md font-bold block text-center">
-          チェック済みタスク
-        </p>
-        {!isFinishLoad ? (
-          <ul className="mt-6">
-            {completeTasks.map((task: any, index) => (
-              <li className="my-3" key={index}>
-                <label
-                  htmlFor={`${task.id}`}
-                  className="flex items-center cursor-pointer opacity-50"
-                >
-                  <input
-                    id={`${task.id}`}
-                    type="checkbox"
-                    className="cursor-pointer w-[25px] h-[25px]"
-                    checked={task.isChecked}
-                    onChange={(e) => handleCompleted(e)}
-                  />
-                  <p className="ml-4 line-through w-[90%]">{task.todo}</p>
-                </label>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="text-center mt-5">
-            <CircularProgress />
-          </div>
-        )}
-
-        {completeTasks.length ? (
-          <div className="text-right">
-            <button
-              className="border border-solid p-3 text-xs bg-main text-white border-white"
-              onClick={() => handleDeleteButton()}
-            >
-              チェック済みを削除
-            </button>
-          </div>
-        ) : (
-          ""
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 

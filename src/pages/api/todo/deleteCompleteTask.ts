@@ -16,15 +16,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const currentUserId: any = req.query.currentUserId;
   const usersCollectionRef = collection(db, "user", currentUserId, "todo");
 
-  const deleteTasks = () => {
+  const deleteTasks = async () => {
     try {
-      getDocs(query(usersCollectionRef, where("isComplete", "==", true))).then(
-        (snapshot) => {
-          snapshot.forEach((doc) => {
-            deleteDoc(doc.ref);
-          });
-        }
-      );
+      await getDocs(
+        query(usersCollectionRef, where("isComplete", "==", true))
+      ).then((snapshot) => {
+        snapshot.forEach((doc) => {
+          deleteDoc(doc.ref);
+        });
+      });
     } catch (error) {
       console.log(error);
     }

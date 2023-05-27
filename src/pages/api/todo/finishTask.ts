@@ -19,16 +19,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       /**
        * isCompleteをfalseからtrueに変更する
        */
-      getDocs(query(usersCollectionRef, where("id", "==", checkTaskId))).then(
-        (snapshot) => {
-          snapshot.forEach((doc) => {
-            updateDoc(doc.ref, {
-              isComplete: true,
-              isChecked: true,
-            });
+      await getDocs(
+        query(usersCollectionRef, where("id", "==", checkTaskId))
+      ).then((snapshot) => {
+        snapshot.forEach((doc) => {
+          updateDoc(doc.ref, {
+            isComplete: true,
+            isChecked: true,
           });
-        }
-      );
+        });
+      });
     } catch (error) {
       console.log(error);
     }
