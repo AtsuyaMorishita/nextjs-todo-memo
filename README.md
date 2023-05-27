@@ -1,9 +1,5 @@
 # Next.js×Firebase で TODO メモ アプリ制作
 
-## TODO
-
-- メモを追加順に並べる
-
 ## 機能
 
 - 新規会員登録(Firebase Authentication)
