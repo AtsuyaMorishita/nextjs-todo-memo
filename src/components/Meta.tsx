@@ -15,14 +15,16 @@ export const Meta = ({ title, description }: MetaType) => {
   return (
     <Head>
       <title>{metaTitle}</title>
+      <meta name="description" content={metaDesc} />
       <meta property="og:title" content={metaTitle} />
-      <meta property="description" content={metaDesc} />
       <meta property="og:description" content={metaDesc} />
+      <meta property="og:site_name" content={metaTitle} />
       <meta
         property="og:image"
         content={`${process.env.NEXT_PUBLIC_SITE_URL}/ogp_large.png`}
       />
       <meta name="twitter:card" content="summary_large_image" />
+      <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL} />
     </Head>
   );
 };
