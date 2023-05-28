@@ -7,7 +7,6 @@ export default function Document() {
         <meta httpEquiv="content-language" content="ja" />
         <meta name="theme-color" content="#00488e" />
         <meta name="application-name" content="gourmet-search" />
-        <meta name="description" content="TODOとメモを兼ね備えたアプリです。" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" sizes="192x192" href="/icon-192x192.png" />
         <link rel="icon" href="/favicon.ico" />
