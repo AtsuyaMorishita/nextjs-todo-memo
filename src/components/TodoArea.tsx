@@ -1,6 +1,16 @@
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  useDroppable,
+} from "@dnd-kit/core";
 import { CircularProgress, LinearProgress, dialogClasses } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import TaskItem from "./TaskItem";
+import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 
 type TodoAreaType = {
   currentUser: any;
@@ -23,6 +33,12 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [isLoad, setIsLoad] = useState(false); //タスクの読み込み状態を管理
   const [isFinishLoad, setIsFinishLoad] = useState(false); //タスクの読み込み状態を管理
   const [isAllLoad, setIsAllLoad] = useState(false); //上部読み込みバーの状態
+
+  const [testArray, setTestArray] = useState([
+    { id: 1, todo: "大谷翔平", isChecked: false },
+    { id: 2, todo: "鈴木誠也", isChecked: false },
+    { id: 3, todo: "吉田正尚", isChecked: false },
+  ]);
 
   useEffect(() => {
     getTask();
@@ -190,6 +206,46 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
     }
   };
 
+  const { setNodeRef } = useDroppable({
+    id: "droppable",
+  });
+
+  console.log("初回", testArray);
+
+  /**
+   * ドラッグ開始時に発火する関数
+   */
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    //ドラッグしたリソースのid
+    const id = active.id.toString();
+    console.log("ドラッグしたリソースのid", id);
+  };
+
+  /**
+   *
+   */
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    //ドラッグしたリソースのid
+    const id = active.id.toString();
+    //ドロップした場所にあったリソースのid
+    const overId = over?.id;
+    if (!overId) return;
+    console.log("移動時に発火", overId);
+  };
+
+  /**
+   * ドラッグ終了時に発火する関数
+   */
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    const id = active.id.toString();
+    const overId = over?.id;
+    console.log("ドロップした場所にあったリソースのid", overId);
+    if (!overId) return;
+  };
+
   return (
     <>
       {isAllLoad && (
@@ -224,26 +280,27 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
             />
           </div>
           {!isLoad ? (
-            <ul className="mt-4">
-              {remainingTasks.map((task: any, index) => (
-                <li className="my-4" key={index}>
-                  <label
-                    htmlFor={`${task.id}`}
-                    className="flex items-center cursor-pointer"
-                  >
-                    <input
-                      id={`${task.id}`}
-                      type="checkbox"
-                      className="cursor-pointer w-[25px] h-[25px]"
-                      value={task.todo}
-                      checked={task.isChecked}
-                      onChange={(e) => handleRemained(e)}
+            <DndContext
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+            >
+              <SortableContext
+                items={remainingTasks}
+                strategy={rectSortingStrategy}
+              >
+                <ul className="mt-4" ref={setNodeRef}>
+                  {testArray.map((task: any, index) => (
+                    <TaskItem
+                      task={task}
+                      index={index}
+                      handleRemained={handleRemained}
                     />
-                    <p className="ml-4 relative w-[90%]">{task.todo}</p>
-                  </label>
-                </li>
-              ))}
-            </ul>
+                  ))}
+                </ul>
+              </SortableContext>
+              <DragOverlay></DragOverlay>
+            </DndContext>
           ) : (
             <div className="text-center mt-5">
               <CircularProgress />
@@ -257,7 +314,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
             チェック済みタスク
           </p>
           {!isFinishLoad ? (
-            <ul className="mt-6">
+            <ul className="mt-6" ref={setNodeRef}>
               {completeTasks.map((task: any, index) => (
                 <li className="my-3" key={index}>
                   <label
