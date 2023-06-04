@@ -1,24 +1,26 @@
-import { useDraggable } from "@dnd-kit/core";
+import { UniqueIdentifier, useDraggable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { ReactNode } from "react";
 
 type Props = {
   task: any;
-  index: number;
-  handleRemained: any;
+  index: UniqueIdentifier;
+  handleRemained?: any;
 };
 
 const TaskItem = ({ task, index, handleRemained }: Props) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: index });
+    useSortable({
+      id: task.id.toString(),
+    });
 
   return (
     <li
       className="my-4"
-      key={index}
+      key={task.id}
       ref={setNodeRef}
-      {...listeners}
-      {...attributes}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
     >
       <label
         htmlFor={`${task.id}`}
@@ -34,7 +36,9 @@ const TaskItem = ({ task, index, handleRemained }: Props) => {
         />
         <p className="ml-4 relative w-[90%]">{task.todo}</p>
       </label>
-      <button>ここを掴む</button>
+      <button {...listeners} {...attributes}>
+        ここを掴む
+      </button>
     </li>
   );
 };

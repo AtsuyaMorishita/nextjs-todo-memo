@@ -4,13 +4,23 @@ import {
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  UniqueIdentifier,
+  closestCorners,
   useDroppable,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { CircularProgress, LinearProgress, dialogClasses } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import TaskItem from "./TaskItem";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 
 type TodoAreaType = {
   currentUser: any;
@@ -35,13 +45,23 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [isAllLoad, setIsAllLoad] = useState(false); //上部読み込みバーの状態
 
   const [testArray, setTestArray] = useState([
-    { id: 1, todo: "大谷翔平", isChecked: false },
-    { id: 2, todo: "鈴木誠也", isChecked: false },
-    { id: 3, todo: "吉田正尚", isChecked: false },
+    { id: "0", todo: "大谷翔平", isChecked: false },
+    { id: "1", todo: "鈴木誠也", isChecked: false },
+    { id: "2", todo: "吉田正尚", isChecked: false },
   ]);
+  //DragOverlay用のid
+  const [activeId, setActiveId] = useState<UniqueIdentifier>();
+  // ドラッグの開始、移動、終了などにどのような入力を許可するかを決めるprops
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     getTask();
+    // console.log("初回の配列", testArray);
   }, []);
 
   /**
@@ -206,12 +226,6 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
     }
   };
 
-  const { setNodeRef } = useDroppable({
-    id: "droppable",
-  });
-
-  console.log("初回", testArray);
-
   /**
    * ドラッグ開始時に発火する関数
    */
@@ -219,31 +233,51 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
     const { active } = event;
     //ドラッグしたリソースのid
     const id = active.id.toString();
+    setActiveId(id);
     console.log("ドラッグしたリソースのid", id);
   };
 
   /**
-   *
+   * ドラッグ移動中に発火する関数
    */
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     //ドラッグしたリソースのid
-    const id = active.id.toString();
+    const activeId = active.id;
     //ドロップした場所にあったリソースのid
     const overId = over?.id;
-    if (!overId) return;
-    console.log("移動時に発火", overId);
+    console.log("ドラッグ中のID", overId);
+    if (overId == null) return;
+    // ドラッグしたアイテムを新しい位置に移動
+    const newArray = arrayMove(testArray, activeId, overId);
+    // 新しい順序をstateに設定
+    setTestArray(newArray);
   };
 
   /**
    * ドラッグ終了時に発火する関数
    */
+  function arrayMove(array: any, from: any, to: any) {
+    const copy = [...array];
+    const valueToMove = copy[from];
+    copy.splice(from, 1);
+    copy.splice(to, 0, valueToMove);
+    return copy;
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    const id = active.id.toString();
-    const overId = over?.id;
-    console.log("ドロップした場所にあったリソースのid", overId);
-    if (!overId) return;
+    // ドラッグしたリソースのid
+    const activeIndex = active.id.toString();
+    // ドロップした場所にあったリソースのid
+    const overIndex = over?.id;
+
+    console.log("activeIndex", activeIndex, "overIndex", overIndex);
+    if (overIndex == null) return;
+    // ドラッグしたアイテムを新しい位置に移動
+    const newArray = arrayMove(testArray, activeIndex, overIndex);
+    // 新しい順序をstateに設定
+    setTestArray(newArray);
   };
 
   return (
@@ -281,25 +315,27 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
           </div>
           {!isLoad ? (
             <DndContext
+              sensors={sensors}
+              collisionDetection={closestCorners}
               onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
               onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
             >
-              <SortableContext
-                items={remainingTasks}
-                strategy={rectSortingStrategy}
-              >
-                <ul className="mt-4" ref={setNodeRef}>
+              <SortableContext items={testArray} strategy={rectSortingStrategy}>
+                <ul className="mt-4">
                   {testArray.map((task: any, index) => (
                     <TaskItem
+                      key={task.id}
                       task={task}
-                      index={index}
+                      index={task.id}
                       handleRemained={handleRemained}
                     />
                   ))}
                 </ul>
               </SortableContext>
-              <DragOverlay></DragOverlay>
+              <DragOverlay>
+                {activeId ? <p>ドラックされる要素</p> : null}
+              </DragOverlay>
             </DndContext>
           ) : (
             <div className="text-center mt-5">
@@ -314,7 +350,7 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
             チェック済みタスク
           </p>
           {!isFinishLoad ? (
-            <ul className="mt-6" ref={setNodeRef}>
+            <ul className="mt-6">
               {completeTasks.map((task: any, index) => (
                 <li className="my-3" key={index}>
                   <label
