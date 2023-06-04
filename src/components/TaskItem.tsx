@@ -1,27 +1,29 @@
-import { UniqueIdentifier, useDraggable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ReactNode } from "react";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
 type Props = {
   task: any;
-  index: UniqueIdentifier;
+  index: any;
   handleRemained?: any;
 };
 
 const TaskItem = ({ task, index, handleRemained }: Props) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
-      id: task.id.toString(),
+      id: task.id,
     });
 
   return (
     <li
-      className="my-4"
+      className="my-4 flex"
       key={task.id}
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
     >
+      <button className="mr-3" {...listeners} {...attributes}>
+        <DragIndicatorIcon />
+      </button>
       <label
         htmlFor={`${task.id}`}
         className="flex items-center cursor-pointer"
@@ -36,9 +38,6 @@ const TaskItem = ({ task, index, handleRemained }: Props) => {
         />
         <p className="ml-4 relative w-[90%]">{task.todo}</p>
       </label>
-      <button {...listeners} {...attributes}>
-        ここを掴む
-      </button>
     </li>
   );
 };

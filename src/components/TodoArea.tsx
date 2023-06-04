@@ -21,6 +21,7 @@ import {
   rectSortingStrategy,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
+import TaskMoveItem from "./TaskMoveItem";
 
 type TodoAreaType = {
   currentUser: any;
@@ -43,14 +44,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [isLoad, setIsLoad] = useState(false); //タスクの読み込み状態を管理
   const [isFinishLoad, setIsFinishLoad] = useState(false); //タスクの読み込み状態を管理
   const [isAllLoad, setIsAllLoad] = useState(false); //上部読み込みバーの状態
+  const [activeId, setActiveId] = useState<UniqueIdentifier>(); //DragOverlay用のid
+  const [dragItemName, setDragItemName] = useState("");
 
-  const [testArray, setTestArray] = useState([
-    { id: "0", todo: "大谷翔平", isChecked: false },
-    { id: "1", todo: "鈴木誠也", isChecked: false },
-    { id: "2", todo: "吉田正尚", isChecked: false },
-  ]);
-  //DragOverlay用のid
-  const [activeId, setActiveId] = useState<UniqueIdentifier>();
   // ドラッグの開始、移動、終了などにどのような入力を許可するかを決めるprops
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -61,7 +57,9 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
 
   useEffect(() => {
     getTask();
-    // console.log("初回の配列", testArray);
+    console.log(
+      remainingTasks.every((task) => "id" in task && task.id !== undefined)
+    );
   }, []);
 
   /**
@@ -231,33 +229,13 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
    */
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    //ドラッグしたリソースのid
-    const id = active.id.toString();
-    setActiveId(id);
-    console.log("ドラッグしたリソースのid", id);
+    setActiveId(active.id);
   };
 
   /**
    * ドラッグ移動中に発火する関数
    */
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    //ドラッグしたリソースのid
-    const activeId = active.id;
-    //ドロップした場所にあったリソースのid
-    const overId = over?.id;
-    console.log("ドラッグ中のID", overId);
-    if (overId == null) return;
-    // ドラッグしたアイテムを新しい位置に移動
-    const newArray = arrayMove(testArray, activeId, overId);
-    // 新しい順序をstateに設定
-    setTestArray(newArray);
-  };
-
-  /**
-   * ドラッグ終了時に発火する関数
-   */
-  function arrayMove(array: any, from: any, to: any) {
+  function arrayMove(array: any, from: number, to: number) {
     const copy = [...array];
     const valueToMove = copy[from];
     copy.splice(from, 1);
@@ -265,19 +243,39 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
     return copy;
   }
 
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+    const activeIndex = remainingTasks.findIndex(
+      (task) => task.id === active.id
+    );
+    setDragItemName(remainingTasks[activeIndex].todo);
+    const overIndex = remainingTasks.findIndex((task) => task.id === over.id);
+    if (activeIndex === overIndex) return;
+    // ドラッグしたアイテムを新しい位置に移動
+    const newArray = arrayMove(remainingTasks, activeIndex, overIndex);
+    // 新しい順序をstateに設定
+    setRemainingTasks(newArray);
+  };
+
+  /**
+   * ドラッグ終了時に発火する関数
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    // ドラッグしたリソースのid
-    const activeIndex = active.id.toString();
-    // ドロップした場所にあったリソースのid
-    const overIndex = over?.id;
-
-    console.log("activeIndex", activeIndex, "overIndex", overIndex);
-    if (overIndex == null) return;
+    if (!over) return;
+    const activeIndex = remainingTasks.findIndex(
+      (task) => task.id === active.id
+    );
+    const overIndex = remainingTasks.findIndex((task) => task.id === over.id);
+    if (activeIndex === overIndex) return;
     // ドラッグしたアイテムを新しい位置に移動
-    const newArray = arrayMove(testArray, activeIndex, overIndex);
+    const newArray = arrayMove(remainingTasks, activeIndex, overIndex);
     // 新しい順序をstateに設定
-    setTestArray(newArray);
+    setRemainingTasks(newArray);
+
+    //fireStoreに新しい配列を登録する
   };
 
   return (
@@ -321,20 +319,23 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
             >
-              <SortableContext items={testArray} strategy={rectSortingStrategy}>
+              <SortableContext
+                items={remainingTasks}
+                strategy={rectSortingStrategy}
+              >
                 <ul className="mt-4">
-                  {testArray.map((task: any, index) => (
+                  {remainingTasks.map((task: any, index) => (
                     <TaskItem
                       key={task.id}
                       task={task}
-                      index={task.id}
+                      index={index}
                       handleRemained={handleRemained}
                     />
                   ))}
                 </ul>
               </SortableContext>
               <DragOverlay>
-                {activeId ? <p>ドラックされる要素</p> : null}
+                {activeId ? <TaskMoveItem todoName={dragItemName} /> : null}
               </DragOverlay>
             </DndContext>
           ) : (
