@@ -1,6 +1,27 @@
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  UniqueIdentifier,
+  closestCorners,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { CircularProgress, LinearProgress, dialogClasses } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import TaskItem from "./TaskItem";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import TaskMoveItem from "./TaskMoveItem";
 
 type TodoAreaType = {
   currentUser: any;
@@ -23,9 +44,22 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
   const [isLoad, setIsLoad] = useState(false); //タスクの読み込み状態を管理
   const [isFinishLoad, setIsFinishLoad] = useState(false); //タスクの読み込み状態を管理
   const [isAllLoad, setIsAllLoad] = useState(false); //上部読み込みバーの状態
+  const [activeId, setActiveId] = useState<UniqueIdentifier>(); //DragOverlay用のid
+  const [dragItemName, setDragItemName] = useState("");
+
+  // ドラッグの開始、移動、終了などにどのような入力を許可するかを決めるprops
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     getTask();
+    console.log(
+      remainingTasks.every((task) => "id" in task && task.id !== undefined)
+    );
   }, []);
 
   /**
@@ -190,6 +224,60 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
     }
   };
 
+  /**
+   * ドラッグ開始時に発火する関数
+   */
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id);
+  };
+
+  /**
+   * ドラッグ移動中に発火する関数
+   */
+  function arrayMove(array: any, from: number, to: number) {
+    const copy = [...array];
+    const valueToMove = copy[from];
+    copy.splice(from, 1);
+    copy.splice(to, 0, valueToMove);
+    return copy;
+  }
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+    const activeIndex = remainingTasks.findIndex(
+      (task) => task.id === active.id
+    );
+    setDragItemName(remainingTasks[activeIndex].todo);
+    const overIndex = remainingTasks.findIndex((task) => task.id === over.id);
+    if (activeIndex === overIndex) return;
+    // ドラッグしたアイテムを新しい位置に移動
+    const newArray = arrayMove(remainingTasks, activeIndex, overIndex);
+    // 新しい順序をstateに設定
+    setRemainingTasks(newArray);
+  };
+
+  /**
+   * ドラッグ終了時に発火する関数
+   */
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+    const activeIndex = remainingTasks.findIndex(
+      (task) => task.id === active.id
+    );
+    const overIndex = remainingTasks.findIndex((task) => task.id === over.id);
+    if (activeIndex === overIndex) return;
+    // ドラッグしたアイテムを新しい位置に移動
+    const newArray = arrayMove(remainingTasks, activeIndex, overIndex);
+    // 新しい順序をstateに設定
+    setRemainingTasks(newArray);
+
+    //fireStoreに新しい配列を登録する
+  };
+
   return (
     <>
       {isAllLoad && (
@@ -224,26 +312,32 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
             />
           </div>
           {!isLoad ? (
-            <ul className="mt-4">
-              {remainingTasks.map((task: any, index) => (
-                <li className="my-4" key={index}>
-                  <label
-                    htmlFor={`${task.id}`}
-                    className="flex items-center cursor-pointer"
-                  >
-                    <input
-                      id={`${task.id}`}
-                      type="checkbox"
-                      className="cursor-pointer w-[25px] h-[25px]"
-                      value={task.todo}
-                      checked={task.isChecked}
-                      onChange={(e) => handleRemained(e)}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCorners}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={remainingTasks}
+                strategy={rectSortingStrategy}
+              >
+                <ul className="mt-4">
+                  {remainingTasks.map((task: any, index) => (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      index={index}
+                      handleRemained={handleRemained}
                     />
-                    <p className="ml-4 relative w-[90%]">{task.todo}</p>
-                  </label>
-                </li>
-              ))}
-            </ul>
+                  ))}
+                </ul>
+              </SortableContext>
+              <DragOverlay>
+                {activeId ? <TaskMoveItem todoName={dragItemName} /> : null}
+              </DragOverlay>
+            </DndContext>
           ) : (
             <div className="text-center mt-5">
               <CircularProgress />
