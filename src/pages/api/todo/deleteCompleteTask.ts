@@ -15,9 +15,8 @@ import { db } from "../../../../lib/firebase";
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const currentUserId: any = req.query.currentUserId;
   const usersCollectionRef = collection(db, "user", currentUserId, "todo");
-
-  const deleteTasks = async () => {
-    try {
+  try {
+    const deleteTasks = async () => {
       await getDocs(
         query(usersCollectionRef, where("isComplete", "==", true))
       ).then((snapshot) => {
@@ -25,11 +24,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           deleteDoc(doc.ref);
         });
       });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  deleteTasks();
+    };
+    deleteTasks();
+  } catch (error) {
+    console.log(error);
+  }
 
   res.status(200).json({});
 }
