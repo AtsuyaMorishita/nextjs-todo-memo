@@ -21,22 +21,22 @@ const TaskItem = ({ task, index, handleRemained }: Props) => {
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
     >
-      <button className="mr-3" {...listeners} {...attributes}>
+      <button className="mr-[10px]" {...listeners} {...attributes}>
         <DragIndicatorIcon />
       </button>
       <label
         htmlFor={`${task.id}`}
-        className="flex items-center cursor-pointer"
+        className="flex items-center cursor-pointer w-[calc(100%-34px)]"
       >
         <input
           id={`${task.id}`}
           type="checkbox"
-          className="cursor-pointer w-[25px] h-[25px]"
+          className="cursor-pointer w-[25px] h-[25px] shrink-0"
           value={task.todo}
           checked={task.isChecked}
           onChange={(e) => handleRemained(e)}
         />
-        <p className="ml-4 relative w-[90%]">{task.todo}</p>
+        <p className="ml-4 relative break-all">{task.todo}</p>
       </label>
     </li>
   );

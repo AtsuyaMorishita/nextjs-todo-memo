@@ -361,11 +361,11 @@ const TodoArea = ({ currentUser, isTodoArea }: TodoAreaType) => {
                     <input
                       id={`${task.id}`}
                       type="checkbox"
-                      className="cursor-pointer w-[25px] h-[25px]"
+                      className="cursor-pointer w-[25px] h-[25px] shrink-0"
                       checked={task.isChecked}
                       onChange={(e) => handleCompleted(e)}
                     />
-                    <p className="ml-4 line-through w-[90%]">{task.todo}</p>
+                    <p className="ml-4 line-through break-all">{task.todo}</p>
                   </label>
                 </li>
               ))}
