@@ -14,11 +14,11 @@ const TaskMoveItem = ({ todoName }: Props) => {
         <input
           id=""
           type="checkbox"
-          className="cursor-pointer w-[25px] h-[25px]"
+          className="cursor-pointer w-[25px] h-[25px] shrink-0"
           value=""
           checked={false}
         />
-        <p className="ml-4 relative w-[90%]">{todoName}</p>
+        <p className="ml-4 relative break-all">{todoName}</p>
       </label>
     </li>
   );
