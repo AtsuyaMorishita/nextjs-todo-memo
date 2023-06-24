@@ -100,10 +100,6 @@ export default function Login() {
     router.push("/");
   };
 
-  const test = () => {
-    console.log("lllllllllll");
-  };
-
   return (
     <>
       <Meta title="ログイン" />

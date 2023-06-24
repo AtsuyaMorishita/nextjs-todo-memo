@@ -1,12 +1,21 @@
 # Next.js×Firebase で TODO メモ アプリ制作
 
-## 機能
+## 技術スタック
+
+- Next.js
+- TypeScript
+- TailwindCSS
+- Vercel
+- Firebase
+- PWA
+
+## 主な機能
 
 - 新規会員登録(Firebase Authentication)
 - ログイン、ログアウト(Firebase Authentication)
 - Todo の追加、チェックを入れる、チェックを外す、削除(Cloud Firestore)
 - メモの追加、テキストの編集、削除(Cloud Firestore)
-- PWA 対応
+- PWA
 
 ## Cloud Firestore DB
 
@@ -105,7 +114,7 @@
 
 - メールでの会員登録バリデーション
 - パスワード変更の機能
-- OGP 画像の表示
+- OGP の設定
 
 ## 開発者
 
